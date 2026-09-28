@@ -1,0 +1,12 @@
+/* Shared parchment chrome for stage success popups */
+
+.stage-success-letter {
+  border: none !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  background-size: 100% 100% !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.45));
+}

@@ -1,0 +1,110 @@
+/* Hall 1 — interactive SVG scene + timer HUD */
+
+body.hall1-page {
+  margin: 0;
+  background-color: #0b0d12;
+  overflow: hidden;
+}
+
+.hall1-escape {
+  position: relative;
+  width: 100%;
+  height: calc(100dvh - 96px);
+  min-height: calc(100vh - 96px);
+  box-sizing: border-box;
+  overflow: hidden;
+  background: transparent;
+}
+
+.hall1-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+}
+
+.hall1-svg-fallback,
+.hall1-loading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  color: #f4efe6;
+  font-family: "FiraSans-Medium", sans-serif;
+  font-size: 1rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+.hall1-hotspot-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  z-index: 1001;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(12, 18, 36, 0.92);
+  border: 1px solid #c9a45c;
+  color: #e8c65a;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* Checkpoint reward, stacked above the "Click:" hint. */
+.hall1-reward-toast {
+  bottom: 84px;
+  text-transform: none;
+  animation: hall1-reward-in 0.4s ease-out;
+}
+
+@keyframes hall1-reward-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%);
+  }
+}
+
+/* Timer look comes from StageTimer.css (5px radius shared pill). */
+.hall1-escape .stage-escape-hud {
+  position: fixed;
+  top: 14px;
+  right: 18px;
+  z-index: 1000;
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .hall1-escape {
+    height: calc(100dvh - 96px);
+  }
+
+  .hall1-escape .stage-escape-hud {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    transform: none;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 2px 0 8px;
+  }
+
+  .hall1-hotspot-toast {
+    bottom: 18px;
+    font-size: 11px;
+    padding: 8px 14px;
+  }
+}

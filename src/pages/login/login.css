@@ -1,0 +1,166 @@
+body.common-bg {
+  background-attachment: fixed;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  font-family: "FiraSans-Medium", sans-serif !important;
+}
+
+.login-main-container {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: calc(100vh - 96px);
+  min-height: calc(100dvh - 96px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(28px, 6vh, 56px);
+  padding: 16px 16px clamp(48px, 10vh, 96px);
+  font-family: "FiraSans-Medium", sans-serif;
+}
+
+/* Logo is the hero; button stays roughly 40% of its width. */
+.login-logo1 {
+  display: block;
+  width: min(640px, 48vw);
+  max-width: 92%;
+  height: auto;
+  margin: 0 auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.45));
+}
+
+.quiz-loader-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.begin-play-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: min(270px, 20vw);
+  min-width: 200px;
+  aspect-ratio: 3.4 / 1;
+  padding: 0 10%;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 100% 100%;
+  /* button1.png has no alpha; clip to the gold frame to hide its baked-in checkerboard. */
+  clip-path: polygon(
+    0.3% 50.6%, 4% 30%, 8.2% 17%, 10% 13.8%, 46.5% 13.8%, 50% 6.5%,
+    53.5% 13.8%, 90% 13.8%, 91.8% 17%, 96% 30%, 99.7% 50.6%, 96% 72%,
+    91.8% 85%, 90% 87.5%, 53.5% 87.5%, 50% 95%, 46.5% 87.5%, 10% 87.5%,
+    8.2% 85%, 4% 72%
+  );
+  color: #f3d27a;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.85rem, 1.25vw, 1.1rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  text-align: center;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  box-shadow: none;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.begin-play-btn:disabled {
+  opacity: 0.72;
+  cursor: wait;
+  transform: none;
+  filter: grayscale(0.15);
+}
+
+.begin-play-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.12);
+}
+
+.begin-play-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.99);
+  filter: brightness(0.98);
+}
+
+a {
+  text-decoration: none;
+}
+
+div:where(.swal2-container).swal2-backdrop-show,
+div:where(.swal2-container).swal2-noanimation {
+  height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .login-main-container {
+    padding: 12px 12px clamp(28px, 6vh, 48px);
+  }
+
+  .login-logo1 {
+    width: min(420px, 88vw);
+  }
+
+  .begin-play-btn {
+    width: min(230px, 58vw);
+    font-size: clamp(0.85rem, 3.6vw, 1rem);
+    letter-spacing: 0.06em;
+  }
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  body.common-bg:not(.stage1-escape-page) {
+    height: 100vh;
+    background-attachment: fixed !important;
+    background-position: center center;
+    background-repeat: no-repeat !important;
+    background-size: 100% 100%;
+    overflow: hidden !important;
+  }
+
+  .login-main-container {
+    min-height: 100vh;
+    min-height: 100dvh;
+    justify-content: center;
+    padding: 12px;
+    gap: 36px;
+  }
+
+  .login-logo1 {
+    width: min(420px, 88vw);
+    margin: 0 auto;
+  }
+}
+
+@media screen and (max-width: 950px) {
+  @media all and (orientation: landscape) {
+    .login-main-container {
+      min-height: calc(100dvh - 72px);
+      gap: clamp(14px, 5vh, 28px);
+      padding-top: 8px;
+      padding-bottom: clamp(12px, 4vh, 28px);
+    }
+
+    .login-logo1 {
+      width: min(360px, 44vw);
+    }
+
+    .begin-play-btn {
+      width: min(190px, 26vw);
+      min-width: 160px;
+      font-size: 0.85rem;
+    }
+  }
+}

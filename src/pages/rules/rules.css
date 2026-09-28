@@ -1,0 +1,138 @@
+.rules-page {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: calc(100vh - 96px);
+  min-height: calc(100dvh - 96px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(8px, 2vh, 20px) clamp(14px, 3vw, 40px)
+    clamp(12px, 2.5vh, 28px);
+}
+
+/* Blurred scene behind the board; inset past the edges so blur doesn't fade them. */
+.rules-page__bg {
+  position: fixed;
+  inset: -24px;
+  z-index: -1;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.rules-layout {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Board sized to fit the viewport (rules.png is 1530x915). */
+.rules-board-wrap {
+  position: relative;
+  width: min(100%, 1120px, calc((100dvh - 96px - 36px) * 1530 / 915));
+  container-type: inline-size;
+}
+
+.rules-board {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 14px 30px rgba(0, 0, 0, 0.45));
+}
+
+/* Sits in the empty band between the tagline and the board's bottom border. */
+.rules-continue-btn {
+  position: absolute;
+  left: 50%;
+  top: 86.5%;
+  translate: -50% -50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30%;
+  aspect-ratio: 3.4 / 1;
+  padding: 0 10%;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 100% 100%;
+  /* button1.png has no alpha; clip to the gold frame to hide its baked-in checkerboard. */
+  clip-path: polygon(
+    0.3% 50.6%, 4% 30%, 8.2% 17%, 10% 13.8%, 46.5% 13.8%, 50% 6.5%,
+    53.5% 13.8%, 90% 13.8%, 91.8% 17%, 96% 30%, 99.7% 50.6%, 96% 72%,
+    91.8% 85%, 90% 87.5%, 53.5% 87.5%, 50% 95%, 46.5% 87.5%, 10% 87.5%,
+    8.2% 85%, 4% 72%
+  );
+  color: #f3d27a;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.7rem, 2.5cqw, 1.1rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.rules-continue-btn:disabled {
+  opacity: 0.72;
+  cursor: wait;
+  filter: grayscale(0.15);
+}
+
+.rules-continue-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.12);
+}
+
+.rules-continue-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.99);
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .rules-page {
+    min-height: calc(100svh - 96px);
+    min-height: calc(100dvh - 96px);
+    padding: 10px 12px 18px;
+  }
+
+  /* rules_mob.png (940x1672): fit board plus button below it on screen. */
+  .rules-board-wrap {
+    width: min(100%, 480px, calc((100dvh - 96px - 130px) * 940 / 1672));
+    margin: 0 auto;
+  }
+
+  /* Board is too small to hold a readable button; place it underneath. */
+  .rules-continue-btn {
+    position: static;
+    translate: none;
+    width: min(280px, 86vw);
+    margin: 14px auto 0;
+    padding: 0 12%;
+    font-size: clamp(0.95rem, 4vw, 1.15rem);
+  }
+}
+
+@media screen and (max-width: 950px) and (orientation: landscape) {
+  .rules-page {
+    min-height: calc(100vh - 72px);
+    min-height: calc(100dvh - 72px);
+    padding: 6px 16px 10px;
+  }
+
+  .rules-board-wrap {
+    width: min(100%, calc((100dvh - 72px - 20px) * 1530 / 915));
+  }
+}

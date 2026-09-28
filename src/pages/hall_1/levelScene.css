@@ -1,0 +1,576 @@
+/* Shared level UI (Village Square, Riverside Crossing): fitted SVG scene, plaques, popups */
+
+body.level-scene-page {
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Whole page (header strip and the space beside the fitted scene) shows a
+   soft, darkened copy of the scene SVG; --vs-bg is set in stage1.jsx. */
+body.level-scene-page::before {
+  content: "";
+  position: fixed;
+  inset: -48px;
+  z-index: -1;
+  background-image: var(--vs-bg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: blur(22px) brightness(0.8) saturate(1.1);
+  pointer-events: none;
+}
+
+.vs-stage {
+  --vs-navy: #10284a;
+  --vs-navy-deep: #0b1a33;
+  --vs-gold: #d9a93b;
+  --vs-gold-light: #f3d27a;
+  --vs-parchment: #fbf3df;
+  --vs-ink: #2a2116;
+
+  --vs-header-h: 96px; /* measured at runtime in stage1.jsx */
+  /* How far the stage slides up behind the (transparent) site header. */
+  --vs-pull: var(--vs-header-h);
+
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: calc(-1 * var(--vs-pull));
+  height: calc(100vh - var(--vs-header-h) + var(--vs-pull));
+  height: calc(100dvh - var(--vs-header-h) + var(--vs-pull));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.vs-stage .stage-escape-hud {
+  position: fixed;
+  top: 14px;
+  right: 18px;
+  z-index: 1000;
+}
+
+.vs-scene-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.vs-scene-svg {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+}
+
+/* Same box as the fitted art; overlays scale with it (cqw = 1% of scene width). */
+.vs-scene-box {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  container-type: inline-size;
+}
+
+.vs-status {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: rgba(11, 26, 51, 0.85);
+  color: #f4efe6;
+  font-family: "FiraSans-Medium", sans-serif;
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+/* Title plaque (top-left): parchment title over a navy subtitle bar. */
+/* Overlays clear the header when the scene reaches up behind it. */
+.vs-plaque {
+  position: absolute;
+  top: max(1.6cqw, calc(var(--vs-pull) - var(--vs-box-top, 0px) + 0.8cqw));
+  left: 1.6cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: clamp(150px, 23cqw, 380px);
+  pointer-events: none;
+  font-family: Georgia, "Times New Roman", serif;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+}
+
+.vs-plaque__title {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 0.45em 0.6em 0.55em;
+  border: 2px solid var(--vs-gold);
+  border-radius: 10px;
+  outline: 1px solid rgba(217, 169, 59, 0.55);
+  outline-offset: -6px;
+  background: linear-gradient(180deg, #fdf6e3 0%, #f1e2bd 100%);
+  color: var(--vs-navy-deep);
+  font-size: clamp(0.95rem, 1.95cqw, 2rem);
+  white-space: nowrap;
+  font-weight: 800;
+  font-variant: small-caps;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.vs-plaque__sub {
+  box-sizing: border-box;
+  width: 84%;
+  margin: -6px 0 0;
+  padding: 0.35em 0.8em;
+  border: 2px solid var(--vs-gold);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #16325a 0%, var(--vs-navy-deep) 100%);
+  color: #f4efe6;
+  font-size: clamp(0.64rem, 1.15cqw, 1.15rem);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* "0 / 8 FOUND" plaque (top-centre) with gold end points. */
+.vs-counter {
+  position: absolute;
+  top: max(1.6cqw, calc(var(--vs-pull) - var(--vs-box-top, 0px) + 0.8cqw));
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.45em 1.6em;
+  border: 2px solid var(--vs-gold);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #16325a 0%, var(--vs-navy-deep) 100%);
+  color: #f4efe6;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.78rem, 1.45cqw, 1.4rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+}
+
+.vs-counter::before,
+.vs-counter::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 0.7em;
+  height: 0.7em;
+  border: 2px solid var(--vs-gold);
+  background: var(--vs-navy-deep);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.vs-counter::before {
+  left: -0.45em;
+}
+
+.vs-counter::after {
+  right: -0.45em;
+}
+
+.vs-counter__num {
+  color: var(--vs-gold-light);
+}
+
+.vs-banner {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #5c1a1a;
+  color: #fff;
+  font-family: "FiraSans-Medium", sans-serif;
+  z-index: 5;
+}
+
+.vs-banner button {
+  border: 1px solid #fff;
+  border-radius: 6px;
+  background: transparent;
+  color: #fff;
+  padding: 4px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* ---------- popups ---------- */
+
+.vs-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.vs-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 12, 24, 0.62);
+  backdrop-filter: blur(2px);
+}
+
+.vs-card {
+  position: relative;
+  box-sizing: border-box;
+  width: min(560px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  padding: 28px 28px 22px;
+  border: 3px solid var(--vs-gold);
+  border-radius: 14px;
+  outline: 1px solid rgba(217, 169, 59, 0.5);
+  outline-offset: -9px;
+  background: var(--vs-parchment);
+  color: var(--vs-ink);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  font-family: Georgia, "Times New Roman", serif;
+  animation: vs-pop 0.22s ease-out;
+}
+
+.vs-card:focus {
+  outline: 1px solid rgba(217, 169, 59, 0.5);
+}
+
+@keyframes vs-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.vs-card__close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--vs-navy);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.vs-card__close:hover {
+  background: rgba(16, 40, 74, 0.08);
+}
+
+.vs-card__eyebrow {
+  margin: 0;
+  color: #8a5a12;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.vs-card__title {
+  margin: 0;
+  color: var(--vs-navy);
+  font-size: clamp(1.3rem, 3vw, 1.65rem);
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.vs-card__title--question {
+  font-size: clamp(1.1rem, 2.6vw, 1.35rem);
+}
+
+.vs-card__quote {
+  margin: 0;
+  color: #6b4a14;
+  font-style: italic;
+  font-size: 1.02rem;
+}
+
+.vs-card__text {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.vs-card__objective {
+  margin: 4px 0 0;
+  padding: 10px 14px;
+  border-left: 3px solid var(--vs-gold);
+  background: rgba(217, 169, 59, 0.14);
+  text-align: left;
+  font-size: 0.98rem;
+  line-height: 1.45;
+}
+
+.vs-card__reward {
+  margin: 0;
+  color: var(--vs-navy);
+  font-weight: 800;
+}
+
+.vs-card__error {
+  margin: 0;
+  color: #9b1c1c;
+  font-family: "FiraSans-Medium", sans-serif;
+  font-size: 0.92rem;
+}
+
+.vs-options {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.vs-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid rgba(16, 40, 74, 0.22);
+  border-radius: 10px;
+  background: #fffaf0;
+  color: var(--vs-ink);
+  text-align: left;
+  font-family: "FiraSans-Medium", sans-serif;
+  font-size: 0.98rem;
+  line-height: 1.35;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.vs-option:hover:not(:disabled) {
+  border-color: var(--vs-gold);
+}
+
+.vs-option:focus-visible {
+  outline: 3px solid var(--vs-gold);
+  outline-offset: 2px;
+}
+
+.vs-option.is-selected {
+  border-color: var(--vs-navy);
+  background: #fdecc4;
+}
+
+.vs-option__letter {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--vs-navy);
+  color: var(--vs-gold-light);
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 800;
+}
+
+.vs-option.is-selected .vs-option__letter {
+  background: var(--vs-gold);
+  color: var(--vs-navy-deep);
+}
+
+/* button1.png has no alpha; clip to the gold frame (same as login / rules). */
+.vs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: min(250px, 80%);
+  aspect-ratio: 3.4 / 1;
+  margin-top: 6px;
+  padding: 0 10%;
+  border: none;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  clip-path: polygon(
+    0.3% 50.6%, 4% 30%, 8.2% 17%, 10% 13.8%, 46.5% 13.8%, 50% 6.5%,
+    53.5% 13.8%, 90% 13.8%, 91.8% 17%, 96% 30%, 99.7% 50.6%, 96% 72%,
+    91.8% 85%, 90% 87.5%, 53.5% 87.5%, 50% 95%, 46.5% 87.5%, 10% 87.5%,
+    8.2% 85%, 4% 72%
+  );
+  color: var(--vs-gold-light);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.02rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.vs-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.12);
+}
+
+.vs-btn:focus-visible {
+  filter: brightness(1.25);
+}
+
+.vs-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(0.3);
+}
+
+/* success */
+
+.vs-key {
+  font-size: 3.2rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 12px rgba(243, 210, 122, 0.9));
+  animation: vs-key-glow 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes vs-key-glow {
+  to {
+    filter: drop-shadow(0 0 22px rgba(243, 210, 122, 1));
+    transform: scale(1.06);
+  }
+}
+
+.vs-collected {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 1.6rem;
+}
+
+.vs-progress {
+  width: 100%;
+  max-width: 360px;
+}
+
+.vs-progress__label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  color: var(--vs-navy);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.vs-progress__track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(16, 40, 74, 0.15);
+  overflow: hidden;
+}
+
+.vs-progress__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--vs-gold), var(--vs-gold-light));
+  transition: width 0.8s ease;
+}
+
+.vs-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-card,
+  .vs-key {
+    animation: none;
+  }
+}
+
+/* Portrait phones: timer sits in flow above the scene (StageTimer.css). */
+@media (max-width: 900px) and (orientation: portrait) {
+  /* Timer sits in flow above the scene here, so keep the stage below the header. */
+  .vs-stage {
+    --vs-pull: 0px;
+  }
+
+  .vs-stage .stage-escape-hud {
+    position: relative;
+    top: auto;
+    right: auto;
+  }
+
+  /* Title plaque left, counter right, so neither covers the scene's centre. */
+  .vs-plaque {
+    top: 6px;
+    left: 6px;
+    width: 150px;
+  }
+
+  .vs-plaque__title {
+    font-size: 1rem;
+    padding: 0.35em 0.4em 0.45em;
+  }
+
+  .vs-plaque__sub {
+    font-size: 0.64rem;
+    width: 92%;
+  }
+
+  .vs-counter {
+    top: 10px;
+    left: auto;
+    right: 10px;
+    transform: none;
+    font-size: 0.78rem;
+    padding: 0.4em 1.1em;
+  }
+
+  .vs-card {
+    padding: 22px 16px 16px;
+    gap: 10px;
+  }
+
+  .vs-card__text,
+  .vs-option {
+    font-size: 0.92rem;
+  }
+
+  .vs-btn {
+    width: min(220px, 80%);
+    font-size: 0.92rem;
+  }
+}

@@ -1,0 +1,214 @@
+/* Level 2 — Riverside Crossing. Shared scene / plaque / popup styles: levelScene.css.
+   Sizes use cqw (1% of the fitted scene width, from .vs-scene-box). */
+
+/* Thin progress bar under the "N / 8 PLANKS" plaque. */
+.rc-counter {
+  padding-bottom: 0.8em;
+}
+
+.rc-counter__bar {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 0.28em;
+  height: 0.22em;
+  border-radius: 999px;
+  background: rgba(243, 210, 122, 0.22);
+  overflow: hidden;
+}
+
+.rc-counter__bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--vs-gold), var(--vs-gold-light));
+  transition: width 0.6s ease;
+}
+
+/* ---------- quiz: statement card + Myth / Fact ---------- */
+
+.rc-quiz {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(46cqw, 820px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1cqw;
+  pointer-events: auto;
+}
+
+.rc-statement {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 11cqw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.8cqw 3cqw;
+  border: 3px solid var(--vs-gold);
+  border-radius: 2.2cqw;
+  outline: 1px solid rgba(217, 169, 59, 0.6);
+  outline-offset: -0.7cqw;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 255, 255, 0.55), transparent 70%),
+    linear-gradient(180deg, #fdf6e3 0%, #f0e0b8 100%);
+  box-shadow: 0 1cqw 2.4cqw rgba(0, 0, 0, 0.35);
+}
+
+.rc-statement p {
+  margin: 0;
+  color: var(--vs-navy-deep);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1rem, 1.85cqw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  animation: rc-statement-in 0.35s ease-out;
+}
+
+@keyframes rc-statement-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.6em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rc-answers {
+  display: flex;
+  justify-content: center;
+  gap: 1cqw;
+  width: 100%;
+}
+
+.rc-answer {
+  flex: 0 1 48%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  filter: drop-shadow(0 0.5cqw 0.9cqw rgba(0, 0, 0, 0.4));
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.rc-answer img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+.rc-answer:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.03);
+  filter: brightness(1.1) drop-shadow(0 0.7cqw 1.2cqw rgba(0, 0, 0, 0.45));
+}
+
+.rc-answer:active:not(:disabled) {
+  transform: translateY(1px) scale(0.99);
+}
+
+.rc-answer:focus-visible {
+  outline: 3px solid var(--vs-gold-light);
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+
+.rc-answer:disabled {
+  cursor: wait;
+  opacity: 0.8;
+}
+
+.rc-hint,
+.rc-build-hint {
+  margin: 0;
+  color: #fffaf0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.8rem, 1.2cqw, 1.3rem);
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85), 0 0 12px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- build phase ---------- */
+
+.rc-build-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 29%;
+  transform: translateX(-50%);
+  padding: 0.6em 1.6em;
+  border: 2px solid var(--vs-gold);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #fdf6e3 0%, #f0e0b8 100%);
+  color: var(--vs-navy-deep);
+  text-shadow: none;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+.rc-cross {
+  position: absolute;
+  right: 2.5cqw;
+  bottom: 29%;
+  width: clamp(170px, 17cqw, 300px);
+  pointer-events: auto;
+}
+
+.rc-cross .vs-btn {
+  width: 100%;
+  margin: 0;
+  font-size: clamp(0.8rem, 1.2cqw, 1.2rem);
+}
+
+/* ---------- phones (whole portrait scene, narrower cqw) ---------- */
+
+@media (max-width: 900px) and (orientation: portrait) {
+  .rc-quiz {
+    top: 12%;
+    width: 90cqw;
+    gap: 2.4cqw;
+  }
+
+  .rc-statement {
+    min-height: 22cqw;
+    padding: 3.5cqw 5cqw;
+    border-radius: 4cqw;
+  }
+
+  .rc-statement p {
+    font-size: clamp(0.9rem, 4.4cqw, 1.2rem);
+  }
+
+  .rc-answers {
+    gap: 2.4cqw;
+  }
+
+  .rc-hint {
+    font-size: clamp(0.72rem, 3.3cqw, 0.9rem);
+  }
+
+  .rc-build-hint {
+    bottom: auto;
+    top: 53%;
+    font-size: clamp(0.7rem, 3.3cqw, 0.9rem);
+    padding: 0.5em 1em;
+  }
+
+  .rc-cross {
+    right: auto;
+    left: 50%;
+    bottom: 1.5%;
+    transform: translateX(-50%);
+    width: min(60cqw, 240px);
+  }
+
+  .rc-cross .vs-btn {
+    font-size: 0.85rem;
+  }
+}

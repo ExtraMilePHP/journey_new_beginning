@@ -1,0 +1,137 @@
+/* Shared stage timer + points — single gold-on-black pill */
+
+.stage-escape-hud {
+  position: fixed;
+  top: 14px;
+  right: 18px;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+  transform: none;
+}
+
+.stage-escape-timer {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 16px 7px 12px;
+  border-radius: 5px;
+  background: #000000;
+  border: 1px solid #8c6c3e;
+  box-shadow: none;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  color: #b8924a;
+  pointer-events: none;
+  user-select: none;
+}
+
+.stage-escape-timer__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.stage-escape-timer__icon img {
+  width: 22px;
+  height: 22px;
+  display: block;
+  object-fit: contain;
+}
+
+.stage-escape-timer__coin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: #b8924a;
+  flex-shrink: 0;
+}
+
+.stage-escape-timer__coin svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.stage-escape-timer__value,
+.stage-escape-timer__points {
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: #b8924a;
+}
+
+.stage-escape-timer__value {
+  min-width: 3.1em;
+  text-align: center;
+}
+
+.stage-escape-timer__points {
+  min-width: 1.5em;
+  text-align: left;
+}
+
+.stage-escape-timer__divider {
+  color: #8c6c3e;
+  font-size: 1.15rem;
+  line-height: 1;
+  opacity: 0.9;
+  padding: 0 2px;
+}
+
+/* Portrait phones/tablets — match stage10: timer centered above titles */
+@media (max-width: 900px) and (orientation: portrait) {
+  .stage-escape-hud {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    z-index: 20;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 2px 0 8px;
+    flex-shrink: 0;
+  }
+
+  .stage-escape-timer {
+    padding: 6px 12px 6px 10px;
+    gap: 8px;
+    border-radius: 5px;
+  }
+
+  .stage-escape-timer__icon,
+  .stage-escape-timer__icon img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .stage-escape-timer__coin,
+  .stage-escape-timer__coin svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .stage-escape-timer__value,
+  .stage-escape-timer__points {
+    font-size: 1.05rem;
+  }
+
+  .stage-escape-timer__value {
+    min-width: 2.8em;
+  }
+}

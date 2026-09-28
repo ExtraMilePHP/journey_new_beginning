@@ -1,0 +1,247 @@
+/* ─── How-to-play modal (all game stages) ───────────────────────────────── */
+
+.swal2-popup.stage-help-popup {
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  background: #ffffff !important;
+  isolation: isolate;
+  opacity: 1 !important;
+  width: min(92vw, 26rem) !important;
+  max-height: min(88dvh, 88vh) !important;
+  box-shadow:
+    0 24px 60px rgba(15, 35, 60, 0.28),
+    0 8px 24px rgba(15, 35, 60, 0.12) !important;
+}
+
+.swal2-popup.stage-help-popup.stage-help-popup--in {
+  animation: stage-help-in 0.3s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+@keyframes stage-help-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.swal2-popup.stage-help-popup .swal2-title,
+.swal2-popup.stage-help-popup .swal2-actions {
+  display: none !important;
+}
+
+.swal2-popup.stage-help-popup .stage-help-popup__html {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  max-height: none !important;
+  border-radius: 18px !important;
+  background: #ffffff !important;
+  color: #1e3a5f !important;
+}
+
+.stage-help-card {
+  display: flex;
+  flex-direction: column;
+  max-height: min(88dvh, 88vh);
+  background: #ffffff;
+  color: #1e3a5f;
+}
+
+.stage-help-card__hero {
+  padding: 1.25rem 1.35rem 0.85rem;
+  text-align: center;
+  background: linear-gradient(180deg, #fff8ee 0%, #ffffff 100%);
+  border-bottom: 1px solid #f0e6d8;
+}
+
+.stage-help-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f0a020, #d88810);
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(240, 160, 32, 0.35);
+}
+
+.stage-help-card__title {
+  margin: 0 0 0.35rem;
+  font-family: "BreuerHeadline", sans-serif;
+  font-size: clamp(1.35rem, 4vw, 1.55rem);
+  font-weight: normal;
+  line-height: 1.15;
+  color: #1e3a5f;
+}
+
+.stage-help-card__subtitle {
+  margin: 0;
+  font-family: "FiraSans-Medium", sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: #5a6b7d;
+}
+
+.stage-help-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0.85rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.stage-help-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e8edf3;
+  text-align: left;
+}
+
+.stage-help-step__num {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2f9e4f, #248a42);
+  margin-top: 1px;
+}
+
+.stage-help-step__text {
+  flex: 1;
+  min-width: 0;
+  font-family: "FiraSans-Medium", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #1e293b;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.stage-help-card__footer {
+  padding: 0.75rem 1.1rem 1.1rem;
+  border-top: 1px solid #f0e6d8;
+  background: #fff;
+}
+
+.stage-help-got-it-btn {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0.72rem 1.25rem;
+  font-family: "FiraSans-Medium", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2f9e4f, #248a42);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(47, 158, 79, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.stage-help-got-it-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(47, 158, 79, 0.42);
+}
+
+.stage-help-got-it-btn:active {
+  transform: translateY(0);
+  opacity: 0.92;
+}
+
+html.stage-help-modal-open {
+  height: 100% !important;
+  min-height: 100dvh !important;
+  overflow: hidden !important;
+}
+
+html.stage-help-modal-open body,
+html.stage-help-modal-open body.common-bg,
+html.stage-help-modal-open body.swal2-height-auto {
+  height: 100% !important;
+  min-height: 100dvh !important;
+}
+
+.stage-help-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 10040;
+  background: rgba(12, 24, 40, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.swal2-container {
+  display: grid !important;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  max-height: none !important;
+  z-index: 10050 !important;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+  box-sizing: border-box;
+  overflow: hidden !important;
+  overscroll-behavior: contain;
+}
+
+.swal2-container.swal2-backdrop-show {
+  background: transparent !important;
+}
+
+.swal2-container.swal2-center > .swal2-popup {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  place-self: center center !important;
+}
+
+@media (max-width: 600px) {
+  .stage-help-card__hero {
+    padding: 1rem 1rem 0.75rem;
+  }
+
+  .stage-help-steps {
+    padding: 0.75rem 0.9rem;
+  }
+
+  .stage-help-step__text {
+    font-size: 0.85rem;
+  }
+
+  .stage-help-card__footer {
+    padding: 0.65rem 0.9rem 0.9rem;
+  }
+}
