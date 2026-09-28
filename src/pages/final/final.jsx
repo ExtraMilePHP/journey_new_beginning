@@ -30,7 +30,6 @@ import legacyMobBg from "../final_screen/final2_mob.jpg";
 import trophyImg from "../final_screen/trophy.png";
 import congratsBanner from "../final_screen/congratulationschampion.png";
 import continueBtn from "../final_screen/continue.png";
-import letterBg from "../img/letter.png";
 import "../fonts/breuer-headline.css";
 import "../game/stageSuccessLetter.css";
 import "./final.css";
@@ -483,7 +482,6 @@ export default function FinalPage() {
           <section
             className="final-feedback stage-success-letter"
             aria-label="Did you like the game?"
-            style={{ backgroundImage: `url(${letterBg})` }}
           >
             <h1 className="final-feedback__title">Did you like the game?</h1>
 
@@ -612,7 +610,6 @@ export default function FinalPage() {
           <section
             className="final-perf stage-success-letter"
             aria-label="Your performance"
-            style={{ backgroundImage: `url(${letterBg})` }}
           >
             <div className="final-perf__top">
               <h2 className="final-perf__heading">YOUR PERFORMANCE</h2>

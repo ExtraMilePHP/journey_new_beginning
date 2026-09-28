@@ -21,8 +21,6 @@ import {
 } from "./hallTimer";
 import { ensureHallHotspotStyles, styleHallHotspot } from "./hallHotspotFx";
 import { setupHallPageBodyBackground, isMobViewport } from "../game/gameStageBackground";
-import blurDesk from "../img/blur_Desk.jpg";
-import blurMob from "../img/blur_mob.jpg";
 import "../fonts/breuer-headline.css";
 import "./hall_1.css";
 
@@ -138,8 +136,6 @@ export default function Hall1() {
   useEffect(() => {
     return setupHallPageBodyBackground(document.body, {
       className: "hall1-page",
-      deskForeground: blurDesk,
-      mobForeground: blurMob,
     });
   }, []);
 
