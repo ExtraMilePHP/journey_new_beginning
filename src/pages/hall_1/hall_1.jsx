@@ -20,14 +20,59 @@ import {
   readTotalScoreFromStage,
 } from "./hallTimer";
 import { ensureHallHotspotStyles, styleHallHotspot } from "./hallHotspotFx";
-import { setupHallPageBodyBackground, isMobViewport } from "../game/gameStageBackground";
+import { isMobViewport } from "../game/gameStageBackground";
+import { useLevelPage, useSceneFit, useApplySceneFit } from "./levelScene";
 import "../fonts/breuer-headline.css";
 import "./hall_1.css";
 import { CHECKPOINT_KEY_IMAGES } from "./keyImages";
 
 /** Large Illustrator SVG — served from /public (SVGR cannot parse embedded binary). */
-const HALL1_DESK_SVG = `${process.env.PUBLIC_URL || ""}/hall_1/hall1.svg`;
-const HALL1_MOB_SVG = `${process.env.PUBLIC_URL || ""}/hall_1/hall1_mob.svg`;
+const HALL1_DESK_SVG = `${process.env.PUBLIC_URL || ""}/hall_1/main.svg`;
+const HALL1_MOB_SVG = `${process.env.PUBLIC_URL || ""}/hall_1/main_mob.svg`;
+
+/**
+ * Layers of main.svg / main_mob.svg per checkpoint (in HALL1_HOTSPOT_ORDER).
+ * `label` (the name plaque) always shows and is the button while the
+ * checkpoint is the current one; `pin` appears once it has been completed.
+ * Every other layer shows exactly as authored in the SVG.
+ */
+const HALL1_LOCATIONS = {
+  medal_display: {
+    pin: "location_01",
+    label: { desk: "Village1", mob: "Village_square" },
+  },
+  commentary_booth: {
+    pin: "location_02",
+    label: { desk: "river_side", mob: "River_side" },
+  },
+  museum_archive: {
+    pin: "location_03",
+    label: { desk: "Festival_market", mob: "Festival_market" },
+  },
+  newspaper: {
+    pin: "location_04",
+    label: { desk: "Celebration_steps", mob: "Celebration_steps" },
+  },
+  trophy_vault: {
+    pin: "location_05",
+    label: { desk: "Grand_celebration", mob: "Grand_celebration" },
+  },
+};
+
+/**
+ * Scene fit, as in the level stages: the art covers the screen (behind the
+ * header too), cropping only outside `safe` — the band holding every
+ * location label and pin (fractions of the art). Desktop never crops top or
+ * bottom: on screens wider than 16:9 the whole art is stretched to fit.
+ */
+const HALL1_FIT = {
+  desk: { w: 1920, h: 1080, fill: true, safe: { x0: 0.1, x1: 0.9, y0: 0, y1: 1 } },
+  mob: { w: 414, h: 896, fill: true, safe: { x0: 0.2, x1: 0.9, y0: 0.19, y1: 0.82 } },
+};
+
+function setLayerVisible(el, visible) {
+  if (el) el.style.display = visible ? "" : "none";
+}
 
 function useHallSvgUrl(deskUrl, mobUrl) {
   const [svgUrl, setSvgUrl] = useState(() =>
@@ -60,11 +105,11 @@ const HOTSPOT_ROUTES = {
 };
 
 const HOTSPOT_LABELS = {
-  medal_display: "Medal Display",
-  commentary_booth: "Commentary Booth",
-  museum_archive: "Museum Archive",
-  newspaper: "Newspaper",
-  trophy_vault: "Trophy Vault",
+  medal_display: "Village Square",
+  commentary_booth: "Riverside Crossing",
+  museum_archive: "Festival Market",
+  newspaper: "Celebration Steps",
+  trophy_vault: "Grand Celebration",
 };
 
 const ALL_HOTSPOT_IDS = Object.keys(HOTSPOT_LABELS);
@@ -106,10 +151,20 @@ export default function Hall1() {
     ""
   );
 
+  const stageRef = useRef(null);
+  const wrapRef = useRef(null);
   const objectRef = useRef(null);
   const elapsedRef = useRef(0);
   const stageRowIdRef = useRef("");
   const hallSvgUrl = useHallSvgUrl(HALL1_DESK_SVG, HALL1_MOB_SVG);
+  // Same page chrome as the level stages; no blurred backdrop copy of the (huge) SVG.
+  useLevelPage(stageRef, null);
+  const sceneFit = useSceneFit(
+    wrapRef,
+    hallSvgUrl === HALL1_MOB_SVG ? HALL1_FIT.mob : HALL1_FIT.desk
+  );
+  /** Bumped on every SVG (re)bind so the fitted viewBox is re-applied. */
+  const [bindVersion, setBindVersion] = useState(0);
   const [elapsedSec, setElapsedSec] = useState(0);
   const [timerReady, setTimerReady] = useState(false);
   const [progressReady, setProgressReady] = useState(false);
@@ -136,12 +191,6 @@ export default function Hall1() {
   useEffect(() => {
     dispatch(setBackButtonUrl("/rules"));
   }, [dispatch]);
-
-  useEffect(() => {
-    return setupHallPageBodyBackground(document.body, {
-      className: "hall1-page",
-    });
-  }, []);
 
   useEffect(() => {
     setSvgReady(false);
@@ -243,47 +292,65 @@ export default function Hall1() {
     if (svg) {
       svg.style.width = "100%";
       svg.style.height = "100%";
-      svg.setAttribute("preserveAspectRatio", "none");
+      svg.__vsBound = true; // lets useApplySceneFit set the fitted viewBox
     }
 
     ensureHallHotspotStyles(doc);
+    const layout = obj.data && String(obj.data).endsWith("main_mob.svg") ? "mob" : "desk";
     const completedSet = new Set(completedHotspots);
+    const byId = (layerId) => doc.getElementById(layerId);
 
     ALL_HOTSPOT_IDS.forEach((id) => {
-      let el = doc.getElementById(id);
-      if (!el) {
-        console.warn(`[Hall1] missing hotspot id: ${id}`);
-        return;
+      const loc = HALL1_LOCATIONS[id];
+      const enabled = id === activeHotspot && Boolean(HOTSPOT_ROUTES[id]);
+      const completed = !enabled && completedSet.has(id);
+
+      // Pin marks a checkpoint already played; hidden until it is completed.
+      const pin = byId(loc.pin);
+      if (pin) {
+        setLayerVisible(pin, completedSet.has(id));
+        styleHallHotspot(pin, { enabled: false, completed: true });
+      } else {
+        console.warn(`[Hall1] missing location pin: ${loc.pin}`);
       }
 
-      // Replace node so rebinds after DB hydrate do not stack listeners
-      const fresh = el.cloneNode(true);
-      el.parentNode?.replaceChild(fresh, el);
-      el = fresh;
+      // Name labels always show; the current checkpoint's label is the button.
+      [loc.label[layout]].forEach((layerId) => {
+        let el = byId(layerId);
+        if (!el) {
+          console.warn(`[Hall1] missing location label: ${layerId}`);
+          return;
+        }
 
-      const enabled = id === activeHotspot && Boolean(HOTSPOT_ROUTES[id]);
-      const active = enabled;
-      const completed = !active && completedSet.has(id);
-      styleHallHotspot(el, { enabled, active, completed });
-      el.setAttribute("aria-label", HOTSPOT_LABELS[id] || id);
-      el.setAttribute("aria-disabled", enabled ? "false" : "true");
+        // Replace node so rebinds after DB hydrate do not stack listeners
+        const fresh = el.cloneNode(true);
+        el.parentNode?.replaceChild(fresh, el);
+        el = fresh;
 
-      if (!enabled) return;
+        styleHallHotspot(el, { enabled, active: enabled, completed });
+        el.setAttribute("aria-label", HOTSPOT_LABELS[id] || id);
+        el.setAttribute("aria-disabled", enabled ? "false" : "true");
 
-      const onActivate = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        handleHotspotClick(id);
-      };
+        if (!enabled) return;
 
-      el.addEventListener("click", onActivate);
-      el.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") onActivate(e);
+        const onActivate = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleHotspotClick(id);
+        };
+
+        el.addEventListener("click", onActivate);
+        el.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") onActivate(e);
+        });
       });
     });
 
     setSvgReady(true);
+    setBindVersion((v) => v + 1);
   }, [handleHotspotClick, activeHotspot, completedHotspots, progressReady]);
+
+  useApplySceneFit(objectRef, sceneFit, svgReady, bindVersion);
 
   useEffect(() => {
     const obj = objectRef.current;
@@ -300,7 +367,7 @@ export default function Hall1() {
   }, [bindHotspots, hallSvgUrl]);
 
   return (
-    <div className="hall1-escape">
+    <div className="vs-stage vs-stage--full-bleed hall1-stage" ref={stageRef}>
       <div className="stage-escape-hud">
         <StageTimer
           timeLabel={formatSecondsToClock(elapsedSec)}
@@ -308,21 +375,23 @@ export default function Hall1() {
         />
       </div>
 
-      <object
-        ref={objectRef}
-        className="hall1-svg"
-        data={hallSvgUrl}
-        type="image/svg+xml"
-        aria-label="Hall of Champions"
-      >
-        <p className="hall1-svg-fallback">Unable to load hall scene.</p>
-      </object>
+      <div className="vs-scene-wrap" ref={wrapRef}>
+        <object
+          ref={objectRef}
+          className={`vs-scene-svg hall1-svg${svgReady ? "" : " is-loading"}`}
+          data={hallSvgUrl}
+          type="image/svg+xml"
+          aria-label="Journey map"
+        >
+          <p className="hall1-svg-fallback">Unable to load hall scene.</p>
+        </object>
 
-      {!svgReady ? (
-        <p className="hall1-loading" aria-live="polite">
-          Loading hall…
-        </p>
-      ) : null}
+        {!svgReady ? (
+          <p className="hall1-loading" aria-live="polite">
+            Loading hall…
+          </p>
+        ) : null}
+      </div>
 
       {rewardToast ? (
         <p className="hall1-hotspot-toast hall1-reward-toast" role="status">

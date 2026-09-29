@@ -1,28 +1,14 @@
-/* Hall 1 — interactive SVG scene + timer HUD */
+/* Hall 1 — journey map. Page, stage, timer HUD and scene fit come from
+   levelScene.css (.vs-stage / .vs-scene-wrap), the same as the level stages. */
 
-body.hall1-page {
-  margin: 0;
-  background-color: #0b0d12;
-  overflow: hidden;
+.hall1-stage .vs-scene-wrap {
+  background: #0b0d12;
 }
 
-.hall1-escape {
-  position: relative;
-  width: 100%;
-  height: calc(100dvh - 96px);
-  min-height: calc(100vh - 96px);
-  box-sizing: border-box;
-  overflow: hidden;
-  background: transparent;
-}
-
-.hall1-svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  outline: none;
-  background: transparent;
+/* Hidden until pins / labels / festive layers match the player's progress
+   (the raw SVG shows every layer, including the finished scene). */
+.hall1-svg.is-loading {
+  visibility: hidden;
 }
 
 .hall1-svg-fallback,
@@ -77,31 +63,7 @@ body.hall1-page {
   }
 }
 
-/* Timer look comes from StageTimer.css (5px radius shared pill). */
-.hall1-escape .stage-escape-hud {
-  position: fixed;
-  top: 14px;
-  right: 18px;
-  z-index: 1000;
-}
-
 @media (max-width: 768px) and (orientation: portrait) {
-  .hall1-escape {
-    height: calc(100dvh - 96px);
-  }
-
-  .hall1-escape .stage-escape-hud {
-    position: relative;
-    top: auto;
-    right: auto;
-    left: auto;
-    transform: none;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin: 2px 0 8px;
-  }
-
   .hall1-hotspot-toast {
     bottom: 18px;
     font-size: 11px;

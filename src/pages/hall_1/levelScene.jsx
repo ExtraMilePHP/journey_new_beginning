@@ -197,6 +197,8 @@ export function useLevelPage(stageRef, svgUrl) {
   );
 
   useEffect(() => {
+    // No backdrop image (e.g. the hall hub's very large SVG fills the screen anyway).
+    if (!svgUrl) return undefined;
     document.body.style.setProperty("--vs-bg", `url("${svgUrl}")`);
     return () => document.body.style.removeProperty("--vs-bg");
   }, [svgUrl]);

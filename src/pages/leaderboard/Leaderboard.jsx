@@ -2,23 +2,26 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchThemeData } from "../../admin/themeSlice";
 import { selectAdminToken } from "../../admin/sessionSlice";
+import { setBackButtonUrl } from "../uiSlice";
 import { setupAppPageBodyBackground } from "../game/gameStageBackground";
-import deskBg from "../final_screen/final_desk.jpg";
-import mobBg from "../final_screen/final_mob.jpg";
+import deskBg from "../hall_1/stage5/stage5_desk.png";
+import mobBg from "../hall_1/stage5/stage5_mob.png";
 import "../fonts/breuer-headline.css";
 import "./leaderboard.css";
 
+const TOTAL_KEYS = 5;
+const LEADERBOARD_TOP_N = 10;
+
 function readSessionUserId() {
+  let u = {};
   try {
-    const raw = sessionStorage.getItem("userData");
-    if (!raw) return "";
-    const u = JSON.parse(raw);
-    const id = u?.userId ?? u?.userid ?? u?.id;
-    if (id == null || id === "") return "";
-    return String(id).trim();
+    u = JSON.parse(sessionStorage.getItem("userData") || "{}") || {};
   } catch {
-    return "";
+    u = {};
   }
+  const id = u?.userId ?? u?.userid ?? u?.id;
+  if (id == null || id === "") return "";
+  return String(id).trim();
 }
 
 function normalizeLeaderboardRow(row, index) {
@@ -30,6 +33,8 @@ function normalizeLeaderboardRow(row, index) {
       name: "—",
       points: 0,
       time: "00:00",
+      keys: 0,
+      completed: false,
     };
   }
   const name =
@@ -52,6 +57,8 @@ function normalizeLeaderboardRow(row, index) {
       : row.userid != null && row.userid !== ""
         ? String(row.userid)
         : "";
+  const keysNum = Number(row.keys);
+  const keys = Number.isFinite(keysNum) ? Math.max(0, Math.min(TOTAL_KEYS, keysNum)) : 0;
 
   return {
     key: String(row.userId ?? row.userid ?? row.rank ?? row.id ?? index),
@@ -60,118 +67,64 @@ function normalizeLeaderboardRow(row, index) {
     name: String(name),
     points,
     time,
+    keys,
+    completed: row.completed != null ? Boolean(row.completed) : keys >= TOTAL_KEYS,
   };
 }
 
-const LEADERBOARD_TOP_N = 4;
-
-function buildDisplayRows(rows, currentUserId) {
+/** Top N, plus the viewer's own row pinned underneath when they rank lower. */
+function buildTopRows(rows, currentUserId) {
   if (!rows.length) return [];
-
   const sorted = [...rows].sort((a, b) => a.rank - b.rank);
-  const top = sorted
-    .filter((r) => r.rank >= 1 && r.rank <= LEADERBOARD_TOP_N)
-    .slice(0, LEADERBOARD_TOP_N);
-
+  const top = sorted.filter((r) => r.rank >= 1 && r.rank <= LEADERBOARD_TOP_N);
   if (!currentUserId) return top;
-
-  const userRow = sorted.find(
-    (r) => r.userId && String(r.userId) === String(currentUserId)
-  );
-
+  const userRow = sorted.find((r) => r.userId && String(r.userId) === String(currentUserId));
   if (!userRow || userRow.rank <= LEADERBOARD_TOP_N) return top;
-
   return [...top, { ...userRow, isPinnedViewer: true }];
 }
 
-function TempleIcon() {
+/** Rank 1–3: numbered medal inside a laurel; others: plain number. */
+function RankBadge({ rank }) {
+  if (rank > 3) return <span className="lb-rank-num">{rank}</span>;
   return (
-    <svg className="lb-temple" viewBox="0 0 64 40" aria-hidden>
-      <path
-        d="M32 2 L58 16 H6 Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M10 16 V34 H54 V16"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <path d="M4 34 H60" stroke="currentColor" strokeWidth="2.4" />
-      <path d="M18 16 V34 M32 16 V34 M46 16 V34" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="M2 12 C10 8, 14 18, 22 14 M42 14 C50 18, 54 8, 62 12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        opacity="0.85"
-      />
-    </svg>
-  );
-}
-
-function LaurelRank({ rank }) {
-  return (
-    <span className="lb-laurel" aria-label={`Rank ${rank}`}>
-      <svg className="lb-laurel__wreath" viewBox="0 0 48 48" aria-hidden>
-        <path
-          d="M14 38c-6-6-8-14-6-22 4 3 7 8 8 14-3-1-6-4-8-8 1 7 3 13 6 16z"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-        <path
-          d="M34 38c6-6 8-14 6-22-4 3-7 8-8 14 3-1 6-4 8-8-1 7-3 13-6 16z"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-        <path
-          d="M12 18c2-1 4 0 5 2M11 24c2 0 4 1 5 3M13 30c2 0 3 2 4 3"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-        />
-        <path
-          d="M36 18c-2-1-4 0-5 2M37 24c-2 0-4 1-5 3M35 30c-2 0-3 2-4 3"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-        />
-        <path
-          d="M22 40c2 1 4 1 6 0"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
+    <span className={`lb-medal lb-medal--${rank}`} aria-label={`Rank ${rank}`}>
+      <svg className="lb-medal__laurel" viewBox="0 0 48 40" aria-hidden="true">
+        <g fill="currentColor">
+          {[0, 1, 2, 3].map((i) => (
+            <React.Fragment key={i}>
+              <ellipse cx={9 - i * 0.6} cy={30 - i * 7} rx="3.2" ry="1.6" transform={`rotate(${-50 + i * 18} ${9 - i * 0.6} ${30 - i * 7})`} />
+              <ellipse cx={39 + i * 0.6} cy={30 - i * 7} rx="3.2" ry="1.6" transform={`rotate(${50 - i * 18} ${39 + i * 0.6} ${30 - i * 7})`} />
+            </React.Fragment>
+          ))}
+        </g>
       </svg>
-      <span className="lb-laurel__num">{rank}</span>
+      <span className="lb-medal__disc">{rank}</span>
     </span>
   );
 }
 
-function RankDisplay({ rank }) {
-  if (rank === 1 || rank === 2) {
-    return <LaurelRank rank={rank} />;
-  }
-  return <span className="lb-rank-num">{rank}</span>;
-}
-
-function RowDivider() {
+function LeaderboardRow({ row, isYou }) {
+  const tone = row.rank <= 3 ? ` lb-row--top${row.rank}` : "";
   return (
-    <div className="lb-divider" aria-hidden>
-      <span className="lb-divider__line" />
-      <span className="lb-divider__gem" />
-      <span className="lb-divider__line" />
-    </div>
+    <li
+      className={`lb-row${tone}${isYou ? " lb-row--you" : ""}${
+        row.isPinnedViewer ? " lb-row--pinned" : ""
+      }`}
+    >
+      <span className="lb-cell lb-cell--rank">
+        <RankBadge rank={row.rank} />
+      </span>
+      <span className="lb-cell lb-cell--player">
+        <span className="lb-row__name">{row.name}</span>
+        {isYou ? <span className="lb-you">You</span> : null}
+      </span>
+      <span className="lb-cell lb-cell--keys">{row.keys}</span>
+      <span className="lb-cell lb-cell--score">{row.points.toLocaleString()}</span>
+      <span className="lb-cell lb-cell--time">{row.time}</span>
+      <span className={`lb-cell lb-cell--status${row.completed ? " is-done" : ""}`}>
+        {row.completed ? "Completed" : "In progress"}
+      </span>
+    </li>
   );
 }
 
@@ -184,6 +137,8 @@ function Leaderboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(() => readSessionUserId());
+  /** "top" | "mine" */
+  const [tab, setTab] = useState("top");
 
   const backendBase = useMemo(
     () => String(process.env.REACT_APP_BACKEND_URL || "").replace(/\/+$/, ""),
@@ -193,6 +148,17 @@ function Leaderboard() {
   useEffect(() => {
     dispatch(fetchThemeData({ themeId: currentTheme || null }));
   }, [dispatch, currentTheme]);
+
+  /* Header BACK leaves the game (platform link), never back into Stage 5. */
+  useEffect(() => {
+    let redirect = null;
+    try {
+      redirect = JSON.parse(sessionStorage.getItem("userData") || "{}")?.backButtonRedirect || null;
+    } catch {
+      redirect = null;
+    }
+    dispatch(setBackButtonUrl(redirect || process.env.REACT_APP_BASE_URL || null));
+  }, [dispatch]);
 
   useEffect(() => {
     document.body.classList.add("leaderboard-page");
@@ -210,7 +176,7 @@ function Leaderboard() {
         `url("${mob ? mobBg : deskBg}")`,
         "important"
       );
-      document.body.style.setProperty("background-size", "100% 100%", "important");
+      document.body.style.setProperty("background-size", "cover", "important");
       document.body.style.setProperty("background-position", "center center", "important");
       document.body.style.setProperty("background-repeat", "no-repeat", "important");
       document.body.style.setProperty("background-attachment", "fixed", "important");
@@ -262,99 +228,98 @@ function Leaderboard() {
     loadLeaderboard();
   }, [loadLeaderboard]);
 
-  const displayRows = useMemo(
-    () => buildDisplayRows(rows, currentUserId),
-    [rows, currentUserId]
+  const isYou = useCallback(
+    (r) => Boolean(currentUserId && r.userId && String(r.userId) === String(currentUserId)),
+    [currentUserId]
   );
+
+  const topRows = useMemo(() => buildTopRows(rows, currentUserId), [rows, currentUserId]);
+  const myRow = useMemo(() => rows.find(isYou) || null, [rows, isYou]);
+  const shownRows = tab === "top" ? topRows : myRow ? [myRow] : [];
+
+
+  let body;
+  if (loading) body = <p className="lb-status">Loading scores…</p>;
+  else if (error) body = <p className="lb-status lb-status--error">{error}</p>;
+  else if (!shownRows.length) {
+    body = (
+      <p className="lb-status">
+        {tab === "top" ? "No scores yet." : "Your rank will appear here once you start the journey."}
+      </p>
+    );
+  } else {
+    body = (
+      <div className="lb-table" role="table" aria-label="Leaderboard rankings">
+        <div className="lb-head" role="row">
+          <span className="lb-cell lb-cell--rank" role="columnheader">Rank</span>
+          <span className="lb-cell lb-cell--player" role="columnheader">Player</span>
+          <span className="lb-cell lb-cell--keys" role="columnheader">Keys</span>
+          <span className="lb-cell lb-cell--score" role="columnheader">Score</span>
+          <span className="lb-cell lb-cell--time" role="columnheader">Time</span>
+          <span className="lb-cell lb-cell--status" role="columnheader">Status</span>
+        </div>
+        <ul className="lb-rows">
+          {shownRows.map((r) => (
+            <LeaderboardRow
+              key={r.isPinnedViewer ? `pinned-${r.key}` : r.key}
+              row={r}
+              isYou={isYou(r)}
+            />
+          ))}
+        </ul>
+      </div>
+    );
+  }
 
   return (
     <div className="lb-page">
-      <div className="lb-layout">
-        <header className="lb-title-block">
-          <TempleIcon />
-          <div className="lb-title-row">
-            <span className="lb-title-row__rule" aria-hidden />
-            <h1 className="lb-title">LEADERBOARD</h1>
-            <span className="lb-title-row__rule" aria-hidden />
-          </div>
-          <div className="lb-title-ornament" aria-hidden>
-            <span className="lb-title-ornament__line" />
-            <span className="lb-title-ornament__gem" />
-            <span className="lb-title-ornament__line" />
-          </div>
+      <section className="lb-board" aria-labelledby="lb-title">
+        <header className="lb-banner">
+          <h1 id="lb-title" className="lb-banner__title">
+            Leaderboard
+          </h1>
         </header>
 
-        <div className="lb-card">
-          <div className="lb-card__frame">
-            {loading ? (
-              <p className="lb-status">Loading scores…</p>
-            ) : error ? (
-              <p className="lb-status lb-status--error">{error}</p>
-            ) : rows.length === 0 ? (
-              <p className="lb-status">No scores yet.</p>
-            ) : (
-              <div
-                className="lb-table"
-                role="region"
-                aria-label="Leaderboard rankings"
-                tabIndex={0}
-              >
-                <div className="lb-colhead" aria-hidden>
-                  <span className="lb-colhead__cell lb-colhead__cell--rank">
-                    RANK
-                  </span>
-                  <span className="lb-colhead__cell lb-colhead__cell--player">
-                    PLAYER
-                  </span>
-                  <span className="lb-colhead__cell lb-colhead__cell--time">
-                    TIME TAKEN
-                  </span>
-                  <span className="lb-colhead__cell lb-colhead__cell--score">
-                    SCORE
-                  </span>
-                </div>
+        <p className="lb-subtitle">
+          <span className="lb-subtitle__gem" aria-hidden="true" />
+          Journey of New Beginnings
+          <span className="lb-subtitle__gem" aria-hidden="true" />
+        </p>
 
-                <ul className="lb-rows">
-                  {displayRows.map((r, idx) => {
-                    const isYou =
-                      currentUserId &&
-                      r.userId &&
-                      String(r.userId) === String(currentUserId);
-
-                    return (
-                      <React.Fragment
-                        key={r.isPinnedViewer ? `pinned-${r.key}` : r.key}
-                      >
-                        {r.isPinnedViewer && idx > 0 ? (
-                          <li className="lb-rows__divider" aria-hidden>
-                            <RowDivider />
-                          </li>
-                        ) : null}
-                        <li
-                          className={`lb-row${isYou ? " lb-row--you" : ""}${
-                            r.isPinnedViewer ? " lb-row--pinned" : ""
-                          }`}
-                        >
-                          <div className="lb-row__rank">
-                            <RankDisplay rank={r.rank} />
-                          </div>
-                          <div className="lb-row__player">
-                            <span className="lb-row__name">{r.name}</span>
-                          </div>
-                          <div className="lb-row__time">{r.time}</div>
-                          <div className="lb-row__score">
-                            {r.points.toLocaleString()}
-                          </div>
-                        </li>
-                      </React.Fragment>
-                    );
-                  })}
-                </ul>
-              </div>
-            )}
-          </div>
+        <div className="lb-tabs" role="tablist" aria-label="Leaderboard view">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "top"}
+            className={`lb-tab${tab === "top" ? " is-active" : ""}`}
+            onClick={() => setTab("top")}
+          >
+            Top Players
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "mine"}
+            className={`lb-tab${tab === "mine" ? " is-active" : ""}`}
+            onClick={() => setTab("mine")}
+          >
+            My Rank
+          </button>
         </div>
-      </div>
+
+        <div className="lb-panel" role="tabpanel">
+          {body}
+        </div>
+
+        <footer className="lb-footer">
+          <p className="lb-note">
+            <span className="lb-note__icon" aria-hidden="true">
+              i
+            </span>
+            Ranks are based on score, then completion time.
+          </p>
+        </footer>
+      </section>
     </div>
   );
 }
