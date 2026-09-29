@@ -57,9 +57,12 @@ import {
   elementBox,
   SceneBox,
   Popup,
+  CheckIcon,
+  RetryIcon,
   GoldButton,
   JourneyProgress,
 } from "./levelScene";
+import { KEY_IMAGES } from "./keyImages";
 import "../fonts/breuer-headline.css";
 import "./stage2.css";
 
@@ -814,10 +817,7 @@ export default function HallStage2() {
       </div>
 
       {phase === "story" ? (
-        <Popup labelId="rc-story-title">
-          <h2 id="rc-story-title" className="vs-card__title">
-            {RIVERSIDE_STORY.heading}
-          </h2>
+        <Popup labelId="rc-story-title" title={RIVERSIDE_STORY.heading}>
           <p className="vs-card__quote">{RIVERSIDE_STORY.quote}</p>
           {RIVERSIDE_STORY.paragraphs.map((p) => (
             <p key={p} className="vs-card__text">
@@ -832,34 +832,23 @@ export default function HallStage2() {
       ) : null}
 
       {popup?.type === "retry" ? (
-        <Popup labelId="rc-retry-title" onClose={closeRetry}>
-          <h2 id="rc-retry-title" className="vs-card__title">
-            {RIVERSIDE_RETRY.heading}
-          </h2>
+        <Popup labelId="rc-retry-title" title={RIVERSIDE_RETRY.heading} icon={<RetryIcon />} onClose={closeRetry}>
           <p className="vs-card__text">{RIVERSIDE_RETRY.text}</p>
           <GoldButton onClick={closeRetry}>{RIVERSIDE_RETRY.button}</GoldButton>
         </Popup>
       ) : null}
 
       {learningStatement ? (
-        <Popup labelId="rc-learning-title" onClose={closeLearning}>
+        <Popup labelId="rc-learning-title" title={learningStatement.learning.heading} icon={<CheckIcon />} iconTone="success" onClose={closeLearning}>
           <p className="vs-card__eyebrow">🪵 Bridge plank earned!</p>
-          <h2 id="rc-learning-title" className="vs-card__title">
-            {learningStatement.learning.heading}
-          </h2>
           <p className="vs-card__text">{learningStatement.learning.text}</p>
           <GoldButton onClick={closeLearning}>Continue</GoldButton>
         </Popup>
       ) : null}
 
       {phase === "success" ? (
-        <Popup labelId="rc-success-title">
-          <div className="vs-key" aria-hidden="true">
-            🗝️
-          </div>
-          <h2 id="rc-success-title" className="vs-card__title">
-            {RIVERSIDE_SUCCESS.heading}
-          </h2>
+        <Popup labelId="rc-success-title" title={RIVERSIDE_SUCCESS.heading}>
+          <img className="vs-key" src={KEY_IMAGES.beliefs} alt="" />
           <p className="vs-card__text">{RIVERSIDE_SUCCESS.text}</p>
           <p className="vs-card__reward">{RIVERSIDE_SUCCESS.reward}</p>
           <JourneyProgress percent={RIVERSIDE_COMPLETION_PERCENT} />

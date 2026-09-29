@@ -23,6 +23,7 @@ import { ensureHallHotspotStyles, styleHallHotspot } from "./hallHotspotFx";
 import { setupHallPageBodyBackground, isMobViewport } from "../game/gameStageBackground";
 import "../fonts/breuer-headline.css";
 import "./hall_1.css";
+import { CHECKPOINT_KEY_IMAGES } from "./keyImages";
 
 /** Large Illustrator SVG — served from /public (SVGR cannot parse embedded binary). */
 const HALL1_DESK_SVG = `${process.env.PUBLIC_URL || ""}/hall_1/hall1.svg`;
@@ -121,6 +122,9 @@ export default function Hall1() {
   /** Set by a checkpoint's "Continue Journey" (e.g. Village Square → Key of Traditions). */
   const [rewardToast, setRewardToast] = useState(
     () => CHECKPOINT_TOASTS[location.state?.checkpointComplete] || ""
+  );
+  const [rewardKeyImg] = useState(
+    () => CHECKPOINT_KEY_IMAGES[location.state?.checkpointComplete] || ""
   );
 
   useEffect(() => {
@@ -322,7 +326,8 @@ export default function Hall1() {
 
       {rewardToast ? (
         <p className="hall1-hotspot-toast hall1-reward-toast" role="status">
-          🗝️ {rewardToast}
+          {rewardKeyImg ? <img className="hall1-reward-toast__key" src={rewardKeyImg} alt="" /> : null}
+          {rewardToast}
         </p>
       ) : null}
 

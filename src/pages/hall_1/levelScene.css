@@ -268,23 +268,143 @@ body.level-scene-page::before {
   }
 }
 
+/* Round navy × with a gold ring, sitting on the frame's top-right corner. */
 .vs-card__close {
+  --close-size: 40px;
   position: absolute;
+  z-index: 2;
   top: 10px;
   right: 12px;
-  width: 34px;
-  height: 34px;
-  border: 0;
+  display: grid;
+  place-items: center;
+  width: var(--close-size);
+  height: var(--close-size);
+  padding: 0 0 3px;
+  border: 2px solid var(--vs-gold-light);
   border-radius: 50%;
-  background: transparent;
-  color: var(--vs-navy);
-  font-size: 1.6rem;
+  background: radial-gradient(circle at 50% 35%, #23497d 0%, var(--vs-navy-deep) 75%);
+  box-shadow: 0 0 0 2px #7a5212, 0 4px 10px rgba(0, 0, 0, 0.45);
+  color: var(--vs-gold-light);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: calc(var(--close-size) * 0.72);
+  font-weight: 700;
   line-height: 1;
   cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
 }
 
-.vs-card__close:hover {
-  background: rgba(16, 40, 74, 0.08);
+.vs-card__close:hover:not(:disabled) {
+  transform: scale(1.08);
+  filter: brightness(1.2);
+}
+
+.vs-card__close:focus-visible {
+  outline: 3px solid var(--vs-gold-light);
+  outline-offset: 2px;
+}
+
+.vs-card__close:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Navy title ribbon with gold rules and diamond ends (matches the counter). */
+.vs-card__banner {
+  --medal-size: 76px;
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  margin: 0 10px 4px;
+  padding: 8px 26px;
+  border: 2px solid var(--vs-gold);
+  border-radius: 6px;
+  background: linear-gradient(180deg, #1d4172 0%, var(--vs-navy-deep) 100%);
+  box-shadow: inset 0 0 0 3px var(--vs-navy-deep),
+    inset 0 0 0 4px rgba(243, 210, 122, 0.45), 0 5px 12px rgba(0, 0, 0, 0.3);
+}
+
+.vs-card__banner::before,
+.vs-card__banner::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--vs-gold);
+  background: var(--vs-navy-deep);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.vs-card__banner::before {
+  left: -9px;
+}
+
+.vs-card__banner::after {
+  right: -9px;
+}
+
+/* Medal overlaps the ribbon's left end; the diamond there is hidden under it. */
+.vs-card__banner.has-icon {
+  margin-left: calc(var(--medal-size) * 0.45);
+  padding-left: calc(var(--medal-size) * 0.6 + 8px);
+}
+
+.vs-card__banner.has-icon::before {
+  display: none;
+}
+
+.vs-card__banner-title {
+  margin: 0;
+  color: #fbf3df;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.2rem, 2.6vw, 1.65rem);
+  font-weight: 800;
+  font-variant: small-caps;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  text-align: center;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.55);
+}
+
+.vs-card__medal {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: calc(var(--medal-size) * -0.5);
+  display: grid;
+  place-items: center;
+  width: var(--medal-size);
+  height: var(--medal-size);
+  border: 3px solid var(--vs-gold-light);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #6e3a10 0%, #2c1405 72%);
+  box-shadow: 0 0 0 3px #7a5212, 0 0 0 5px var(--vs-gold),
+    0 6px 14px rgba(0, 0, 0, 0.5), inset 0 0 14px rgba(243, 210, 122, 0.35);
+  font-size: calc(var(--medal-size) * 0.5);
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.vs-card__medal.is-success {
+  background: radial-gradient(circle at 50% 38%, #3d8a2c 0%, #123f10 72%);
+}
+
+.vs-card__medal img {
+  width: 74%;
+  height: 74%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+}
+
+.vs-card__question {
+  margin: 2px 0 0;
+  color: var(--vs-ink);
+  font-size: clamp(1.02rem, 2.2vw, 1.2rem);
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 .vs-card__eyebrow {
@@ -344,62 +464,83 @@ body.level-scene-page::before {
 }
 
 .vs-options {
+  box-sizing: border-box;
   width: 100%;
+  max-width: 560px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   margin: 4px 0;
+  padding: 0 12px; /* room for the diamond ends */
 }
 
+/* Answer ribbon: navy bar, gold rules, diamond ends; gold when selected. */
 .vs-option {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
   width: 100%;
-  padding: 10px 12px;
-  border: 2px solid rgba(16, 40, 74, 0.22);
-  border-radius: 10px;
-  background: #fffaf0;
-  color: var(--vs-ink);
-  text-align: left;
-  font-family: "FiraSans-Medium", sans-serif;
-  font-size: 0.98rem;
-  line-height: 1.35;
+  min-height: 42px;
+  padding: 8px 22px;
+  border: 2px solid var(--vs-gold);
+  border-radius: 4px;
+  background: linear-gradient(180deg, #1d4172 0%, var(--vs-navy-deep) 100%);
+  box-shadow: inset 0 0 0 2px var(--vs-navy-deep),
+    inset 0 0 0 3px rgba(243, 210, 122, 0.4), 0 3px 8px rgba(0, 0, 0, 0.25);
+  color: #fbf3df;
+  text-align: center;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1rem;
+  line-height: 1.3;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: transform 0.15s ease, filter 0.15s ease, background 0.15s ease;
+}
+
+.vs-option::before,
+.vs-option::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--vs-gold);
+  background: var(--vs-navy-deep);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.vs-option::before {
+  left: -8px;
+}
+
+.vs-option::after {
+  right: -8px;
 }
 
 .vs-option:hover:not(:disabled) {
-  border-color: var(--vs-gold);
+  transform: translateY(-1px);
+  filter: brightness(1.18);
 }
 
 .vs-option:focus-visible {
-  outline: 3px solid var(--vs-gold);
-  outline-offset: 2px;
+  outline: 3px solid var(--vs-gold-light);
+  outline-offset: 3px;
+}
+
+.vs-option:disabled {
+  cursor: default;
 }
 
 .vs-option.is-selected {
-  border-color: var(--vs-navy);
-  background: #fdecc4;
-}
-
-.vs-option__letter {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--vs-navy);
-  color: var(--vs-gold-light);
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 800;
-}
-
-.vs-option.is-selected .vs-option__letter {
-  background: var(--vs-gold);
+  background: linear-gradient(180deg, #f7dc8c 0%, #d9a93b 100%);
+  box-shadow: inset 0 0 0 2px #fff3c9, 0 0 12px rgba(243, 210, 122, 0.85);
   color: var(--vs-navy-deep);
+  font-weight: 700;
+}
+
+.vs-option.is-selected::before,
+.vs-option.is-selected::after {
+  background: var(--vs-gold-light);
 }
 
 /* button1.png has no alpha; clip to the gold frame (same as login / rules). */
@@ -451,9 +592,12 @@ body.level-scene-page::before {
 
 /* success */
 
+/* Earned key art (keyImages.js), glowing gently. */
 .vs-key {
-  font-size: 3.2rem;
-  line-height: 1;
+  display: block;
+  width: auto;
+  height: clamp(96px, 16vh, 150px);
+  object-fit: contain;
   filter: drop-shadow(0 0 12px rgba(243, 210, 122, 0.9));
   animation: vs-key-glow 1.8s ease-in-out infinite alternate;
 }
@@ -473,7 +617,36 @@ body.level-scene-page::before {
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 1.6rem;
+}
+
+/* Each found item's own art on a small navy-and-gold tile. */
+.vs-collected li {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--vs-gold);
+  border-radius: 8px;
+  background: radial-gradient(circle at 50% 40%, #1d4172 0%, var(--vs-navy-deep) 80%);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+.vs-collected img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+@media (max-width: 900px) and (orientation: portrait) {
+  .vs-collected li {
+    width: 36px;
+    height: 36px;
+  }
+
+  .vs-key {
+    height: 88px;
+  }
 }
 
 .vs-progress {
@@ -537,12 +710,14 @@ body.level-scene-page::before {
   .vs-plaque {
     top: 6px;
     left: 6px;
-    width: 150px;
+    /* Size to the title so "Village Square" never spills past the plaque. */
+    width: max-content;
   }
 
   .vs-plaque__title {
-    font-size: 1rem;
-    padding: 0.35em 0.4em 0.45em;
+    font-size: 0.92rem;
+    letter-spacing: 0.02em;
+    padding: 0.35em 0.7em 0.45em;
   }
 
   .vs-plaque__sub {
@@ -572,5 +747,171 @@ body.level-scene-page::before {
   .vs-btn {
     width: min(220px, 80%);
     font-size: 0.92rem;
+  }
+}
+
+/* Ornate frame popup (msg.png, 1536×1024). Drawn as a 9-slice border image
+   scaled by the card width (--s = 1 image px), so the frame keeps its
+   proportions and only the plain side rails stretch as text grows. The
+   border widths match the gold frame (parchment spans x 71–1464, y 132–884),
+   so content — which grows the card instead of scrolling — never overlaps it.
+   Double class beats the phone rule above. */
+.vs-card.vs-card--msg {
+  --msg-w: min(820px, 100vw - 32px);
+  --s: calc(var(--msg-w) / 1536);
+  width: var(--msg-w);
+  min-height: calc(var(--s) * 700);
+  max-height: none;
+  overflow: visible;
+  margin: auto;
+  padding: calc(var(--s) * 30 + 6px) calc(var(--s) * 70 + 10px)
+    calc(var(--s) * 20 + 6px);
+  border-style: solid;
+  border-color: transparent;
+  border-width: calc(var(--s) * 140) calc(var(--s) * 80) calc(var(--s) * 148)
+    calc(var(--s) * 78);
+  border-radius: 0;
+  border-image-source: url("./img/msg.png");
+  border-image-slice: 260 300 400 300 fill;
+  border-image-width: calc(var(--s) * 260) calc(var(--s) * 300)
+    calc(var(--s) * 400) calc(var(--s) * 300);
+  border-image-repeat: stretch;
+  outline: none;
+  background: none;
+  box-shadow: none;
+  filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.45));
+}
+
+.vs-card.vs-card--msg:focus {
+  outline: none;
+}
+
+/* × centred on the frame's top-right corner (about image x 1470, y 110);
+   offsets are from the padding box, whose corner is at image x 1456, y 140. */
+.vs-card--msg .vs-card__close {
+  top: calc(var(--s) * -30 - var(--close-size) / 2);
+  right: calc(var(--s) * -14 - var(--close-size) / 2);
+}
+
+/* Tall popups scroll the whole overlay rather than inside the frame. */
+.vs-modal:has(.vs-card--msg) {
+  overflow-y: auto;
+}
+
+.vs-modal:has(.vs-card--msg) .vs-modal__backdrop {
+  position: fixed;
+}
+
+/* Portrait phones use the tall frame (msg_mob.png, 1024×1536; parchment spans
+   x 68–957, y 91–1479). Same 9-slice approach, --s = card width / 1024. */
+@media (max-width: 900px) and (orientation: portrait) {
+  .vs-card.vs-card--msg {
+    --s: calc(var(--msg-w) / 1024);
+    min-height: calc(var(--s) * 600);
+    padding: calc(var(--s) * 30 + 4px) calc(var(--s) * 40 + 6px)
+      calc(var(--s) * 30 + 4px);
+    gap: 8px;
+    border-width: calc(var(--s) * 100) calc(var(--s) * 75) calc(var(--s) * 66)
+      calc(var(--s) * 76);
+    border-image-source: url("./img/msg_mob.png");
+    border-image-slice: 250 300 336 300 fill;
+    border-image-width: calc(var(--s) * 250) calc(var(--s) * 300)
+      calc(var(--s) * 336) calc(var(--s) * 300);
+  }
+
+  /* Tall frame: corner at about image x 965, y 75; padding box at x 949, y 100. */
+  .vs-card--msg .vs-card__close {
+    --close-size: 34px;
+    top: calc(var(--s) * -25 - var(--close-size) / 2);
+    right: calc(var(--s) * -16 - var(--close-size) / 2);
+  }
+
+  .vs-card__banner {
+    --medal-size: 56px;
+    min-height: 44px;
+    margin-inline: 8px;
+    padding: 6px 18px;
+  }
+
+  .vs-card__banner-title {
+    font-size: 1.08rem;
+  }
+
+  .vs-card__question {
+    font-size: 0.95rem;
+  }
+
+  .vs-options {
+    gap: 8px;
+  }
+
+  .vs-option {
+    min-height: 38px;
+    padding: 6px 16px;
+  }
+
+  .vs-card--msg .vs-card__title {
+    font-size: 1.15rem;
+  }
+
+  .vs-card--msg .vs-card__quote,
+  .vs-card--msg .vs-card__text,
+  .vs-card--msg .vs-card__objective {
+    font-size: 0.86rem;
+    line-height: 1.4;
+  }
+
+  .vs-card--msg .vs-card__objective {
+    padding: 8px 10px;
+  }
+}
+
+/* Portrait phones, full-bleed scenes (stage1): the scene reaches up behind the
+   header like on desktop; the timer floats over it just below the header and
+   the plaque / counter sit below the timer. */
+@media (max-width: 900px) and (orientation: portrait) {
+  .vs-stage.vs-stage--full-bleed {
+    --vs-pull: var(--vs-header-h);
+    --vs-hud-h: 40px;
+  }
+
+  .vs-stage.vs-stage--full-bleed .stage-escape-hud {
+    position: absolute !important;
+    top: var(--vs-header-h) !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 2px 0 0;
+    z-index: 1000;
+  }
+
+  .vs-stage--full-bleed .vs-plaque,
+  .vs-stage--full-bleed .vs-counter {
+    top: calc(
+      var(--vs-pull) + var(--vs-hud-h) - var(--vs-box-top, 0px) + 4px
+    );
+  }
+}
+
+/* Snap the frame's 9-slice edges to whole pixels; fractional slice sizes leave
+   faint seam lines across the parchment. Browsers without round() keep the
+   unrounded values above. */
+@supports (width: round(1.5px, 1px)) {
+  .vs-card.vs-card--msg {
+    border-width: round(calc(var(--s) * 140), 1px) round(calc(var(--s) * 80), 1px)
+      round(calc(var(--s) * 148), 1px) round(calc(var(--s) * 78), 1px);
+    border-image-width: round(calc(var(--s) * 260), 1px)
+      round(calc(var(--s) * 300), 1px) round(calc(var(--s) * 400), 1px)
+      round(calc(var(--s) * 300), 1px);
+  }
+
+  @media (max-width: 900px) and (orientation: portrait) {
+    .vs-card.vs-card--msg {
+      border-width: round(calc(var(--s) * 100), 1px)
+        round(calc(var(--s) * 75), 1px) round(calc(var(--s) * 66), 1px)
+        round(calc(var(--s) * 76), 1px);
+      border-image-width: round(calc(var(--s) * 250), 1px)
+        round(calc(var(--s) * 300), 1px) round(calc(var(--s) * 336), 1px)
+        round(calc(var(--s) * 300), 1px);
+    }
   }
 }

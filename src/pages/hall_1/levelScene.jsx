@@ -256,8 +256,52 @@ export function SceneBox({ box, children }) {
   );
 }
 
-/** Centered dialog; focuses itself and closes on Escape when `onClose` is given. */
-export function Popup({ labelId, className = "", onClose, children }) {
+/** Green-medal check mark for "correct answer" popups. */
+export function CheckIcon() {
+  return (
+    <svg viewBox="0 0 48 48" width="60%" height="60%" aria-hidden="true">
+      <path
+        d="M10 25 L20 35 L39 14"
+        fill="none"
+        stroke="#f3d27a"
+        strokeWidth="7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/** Circular arrows for "try again" popups. */
+export function RetryIcon() {
+  return (
+    <svg viewBox="0 0 48 48" width="62%" height="62%" aria-hidden="true">
+      <g fill="none" stroke="#f3d27a" strokeWidth="5" strokeLinecap="round">
+        <path d="M38 20 A15 15 0 0 0 11 17" />
+        <path d="M10 28 A15 15 0 0 0 37 31" />
+      </g>
+      <path d="M5 11 L15 11 L9 21 Z" fill="#f3d27a" />
+      <path d="M43 37 L33 37 L39 27 Z" fill="#f3d27a" />
+    </svg>
+  );
+}
+
+/**
+ * Centered dialog in the ornate msg.png frame; focuses itself and closes on
+ * Escape (and via the corner × button) when `onClose` is given.
+ * `title` renders as the navy ribbon (the dialog's label), with an optional
+ * round `icon` medal; `iconTone="success"` makes the medal green.
+ */
+export function Popup({
+  labelId,
+  title,
+  icon,
+  iconTone = "",
+  className = "",
+  onClose,
+  closeDisabled = false,
+  children,
+}) {
   const cardRef = useRef(null);
   useEffect(() => {
     cardRef.current?.focus();
@@ -274,7 +318,33 @@ export function Popup({ labelId, className = "", onClose, children }) {
   return (
     <div className="vs-modal" role="dialog" aria-modal="true" aria-labelledby={labelId}>
       <div className="vs-modal__backdrop" aria-hidden="true" />
-      <div ref={cardRef} className={`vs-card ${className}`} tabIndex={-1}>
+      <div ref={cardRef} className={`vs-card vs-card--msg ${className}`} tabIndex={-1}>
+        {onClose ? (
+          <button
+            type="button"
+            className="vs-card__close"
+            onClick={onClose}
+            disabled={closeDisabled}
+            aria-label="Close"
+          >
+            ×
+          </button>
+        ) : null}
+        {title ? (
+          <header className={`vs-card__banner${icon ? " has-icon" : ""}`}>
+            {icon ? (
+              <span
+                className={`vs-card__medal${iconTone ? ` is-${iconTone}` : ""}`}
+                aria-hidden="true"
+              >
+                {icon}
+              </span>
+            ) : null}
+            <h2 id={labelId} className="vs-card__banner-title">
+              {title}
+            </h2>
+          </header>
+        ) : null}
         {children}
       </div>
     </div>

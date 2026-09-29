@@ -62,9 +62,12 @@ import {
   setSvgHref,
   SceneBox,
   Popup,
+  CheckIcon,
+  RetryIcon,
   GoldButton,
   JourneyProgress,
 } from "./levelScene";
+import { KEY_IMAGES } from "./keyImages";
 import "../fonts/breuer-headline.css";
 
 /** Hall hub hotspot id that stands for this checkpoint (stage1). */
@@ -104,8 +107,9 @@ function unionIds(a, b) {
 
 /**
  * Scene viewBox sizes. `safe` (fractions of the art) is the band holding every
- * hidden item and the tray; desktop may crop outside it to fill the screen.
- * Phones show the whole art (their items sit too close to the edges to crop).
+ * hidden item and the tray; the scene may crop outside it to fill the screen.
+ * Phone items and the tray run nearly edge to edge, so only the sky above
+ * the tree lantern (y 0.17) and the strip below the tray can be cropped.
  */
 const SCENE_FIT = {
   desk: {
@@ -114,7 +118,12 @@ const SCENE_FIT = {
     fill: true,
     safe: { x0: 0.09, x1: 0.93, y0: 0.08, y1: 0.965 },
   },
-  mob: { w: 414, h: 896, fill: false },
+  mob: {
+    w: 414,
+    h: 896,
+    fill: true,
+    safe: { x0: 0.01, x1: 0.99, y0: 0.07, y1: 0.94 },
+  },
 };
 
 /** Real item art laid over its tray slot; shown once the item is found. */
@@ -570,7 +579,7 @@ export default function HallStage1() {
     popup?.type === "learning" ? ITEM_BY_ID[popup.itemId] : null;
 
   return (
-    <div className="vs-stage" ref={stageRef}>
+    <div className="vs-stage vs-stage--full-bleed" ref={stageRef}>
       <div className="stage-escape-hud">
         <StageTimer
           timeLabel={formatSecondsToClock(elapsedSec)}
@@ -637,10 +646,11 @@ export default function HallStage1() {
       </div>
 
       {phase === "story" ? (
-        <Popup labelId="vs-story-title" className="vs-card--story">
-          <h2 id="vs-story-title" className="vs-card__title">
-            {VILLAGE_SQUARE_STORY.heading}
-          </h2>
+        <Popup
+          labelId="vs-story-title"
+          className="vs-card--story"
+          title={VILLAGE_SQUARE_STORY.heading}
+        >
           <p className="vs-card__quote">{VILLAGE_SQUARE_STORY.quote}</p>
           {VILLAGE_SQUARE_STORY.paragraphs.map((p) => (
             <p key={p} className="vs-card__text">
@@ -657,26 +667,16 @@ export default function HallStage1() {
       ) : null}
 
       {activeItem && !popup ? (
-        <Popup labelId="vs-question" onClose={closeQuestion}>
-          <button
-            type="button"
-            className="vs-card__close"
-            onClick={closeQuestion}
-            aria-label="Close question"
-            disabled={submitting}
-          >
-            ×
-          </button>
-          <p className="vs-card__eyebrow">
-            <span aria-hidden="true">{activeItem.emoji}</span> You found the{" "}
-            {activeItem.name}!
-          </p>
-          <h2
-            id="vs-question"
-            className="vs-card__title vs-card__title--question"
-          >
+        <Popup
+          labelId="vs-question-title"
+          title={activeItem.name}
+          icon={<img src={activeItem.image} alt="" />}
+          onClose={closeQuestion}
+          closeDisabled={submitting}
+        >
+          <p id="vs-question" className="vs-card__question">
             {activeItem.question}
-          </h2>
+          </p>
           <div
             className="vs-options"
             role="radiogroup"
@@ -692,9 +692,6 @@ export default function HallStage1() {
                 onClick={() => setSelectedOption(i)}
                 disabled={submitting}
               >
-                <span className="vs-option__letter" aria-hidden="true">
-                  {OPTION_LETTERS[i]}
-                </span>
                 <span className="vs-option__text">{text}</span>
               </button>
             ))}
@@ -717,11 +714,10 @@ export default function HallStage1() {
         <Popup
           labelId="vs-retry-title"
           className="vs-card--retry"
+          title={VILLAGE_SQUARE_RETRY.heading}
+          icon={<RetryIcon />}
           onClose={closeRetry}
         >
-          <h2 id="vs-retry-title" className="vs-card__title">
-            {VILLAGE_SQUARE_RETRY.heading}
-          </h2>
           <p className="vs-card__text">{VILLAGE_SQUARE_RETRY.text}</p>
           <GoldButton onClick={closeRetry}>
             {VILLAGE_SQUARE_RETRY.button}
@@ -733,34 +729,29 @@ export default function HallStage1() {
         <Popup
           labelId="vs-learning-title"
           className="vs-card--learning"
+          title={learningItem.learning.heading}
+          icon={<CheckIcon />}
+          iconTone="success"
           onClose={closeLearning}
         >
-          <p className="vs-card__eyebrow">
-            <span aria-hidden="true">{learningItem.emoji}</span>{" "}
-            {learningItem.name} collected
-          </p>
-          <h2 id="vs-learning-title" className="vs-card__title">
-            {learningItem.learning.heading}
-          </h2>
           <p className="vs-card__text">{learningItem.learning.text}</p>
           <GoldButton onClick={closeLearning}>Continue</GoldButton>
         </Popup>
       ) : null}
 
       {phase === "success" ? (
-        <Popup labelId="vs-success-title" className="vs-card--success">
-          <div className="vs-key" aria-hidden="true">
-            🗝️
-          </div>
-          <h2 id="vs-success-title" className="vs-card__title">
-            {VILLAGE_SQUARE_SUCCESS.heading}
-          </h2>
+        <Popup
+          labelId="vs-success-title"
+          className="vs-card--success"
+          title={VILLAGE_SQUARE_SUCCESS.heading}
+        >
+          <img className="vs-key" src={KEY_IMAGES.traditions} alt="" />
           <p className="vs-card__text">{VILLAGE_SQUARE_SUCCESS.text}</p>
           <p className="vs-card__reward">{VILLAGE_SQUARE_SUCCESS.reward}</p>
           <ul className="vs-collected" aria-label="Items collected">
             {VILLAGE_SQUARE_ITEMS.map((item) => (
               <li key={item.id} title={item.name}>
-                <span aria-hidden="true">{item.emoji}</span>
+                <img src={item.image} alt="" />
                 <span className="vs-sr-only">{item.name}</span>
               </li>
             ))}

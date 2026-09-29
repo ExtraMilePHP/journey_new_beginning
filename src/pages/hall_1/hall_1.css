@@ -108,3 +108,17 @@ body.hall1-page {
     padding: 8px 14px;
   }
 }
+
+/* Earned key art beside the reward message. */
+.hall1-reward-toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hall1-reward-toast__key {
+  flex: 0 0 auto;
+  height: 2.4em;
+  width: auto;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 106, 0.8));
+}

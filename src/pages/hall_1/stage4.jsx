@@ -51,9 +51,12 @@ import {
   useLevelPage,
   SceneBox,
   Popup,
+  CheckIcon,
+  RetryIcon,
   GoldButton,
   JourneyProgress,
 } from "./levelScene";
+import { KEY_IMAGES } from "./keyImages";
 import "../fonts/breuer-headline.css";
 import "./stage4.css";
 
@@ -768,10 +771,7 @@ export default function HallStage4() {
       ) : null}
 
       {phase === "story" ? (
-        <Popup labelId="cs-story-title">
-          <h2 id="cs-story-title" className="vs-card__title">
-            {CELEBRATION_STEPS_STORY.heading}
-          </h2>
+        <Popup labelId="cs-story-title" title={CELEBRATION_STEPS_STORY.heading}>
           <p className="vs-card__quote">{CELEBRATION_STEPS_STORY.quote}</p>
           {CELEBRATION_STEPS_STORY.paragraphs.map((p) => (
             <p key={p} className="vs-card__text">
@@ -788,26 +788,20 @@ export default function HallStage4() {
       ) : null}
 
       {learning ? (
-        <Popup labelId="cs-learning-title" onClose={closeLearning}>
+        <Popup labelId="cs-learning-title" title={learning.learning.heading} icon={<CheckIcon />} iconTone="success" onClose={closeLearning}>
           <p className="vs-card__eyebrow">
             ✨ Step lit
             {learningTotal > 1
               ? ` · ${learningDone + 1} of ${learningTotal}`
               : ""}
           </p>
-          <h2 id="cs-learning-title" className="vs-card__title">
-            {learning.learning.heading}
-          </h2>
           <p className="vs-card__text">{learning.learning.text}</p>
           <GoldButton onClick={closeLearning}>Continue</GoldButton>
         </Popup>
       ) : null}
 
       {!learning && retryPending ? (
-        <Popup labelId="cs-retry-title" onClose={() => setRetryPending(false)}>
-          <h2 id="cs-retry-title" className="vs-card__title">
-            {CELEBRATION_STEPS_RETRY.heading}
-          </h2>
+        <Popup labelId="cs-retry-title" title={CELEBRATION_STEPS_RETRY.heading} icon={<RetryIcon />} onClose={() => setRetryPending(false)}>
           <p className="vs-card__text">{CELEBRATION_STEPS_RETRY.text}</p>
           <GoldButton onClick={() => setRetryPending(false)}>
             {CELEBRATION_STEPS_RETRY.button}
@@ -816,13 +810,8 @@ export default function HallStage4() {
       ) : null}
 
       {phase === "success" ? (
-        <Popup labelId="cs-success-title">
-          <div className="vs-key" aria-hidden="true">
-            🗝️
-          </div>
-          <h2 id="cs-success-title" className="vs-card__title">
-            {CELEBRATION_STEPS_SUCCESS.heading}
-          </h2>
+        <Popup labelId="cs-success-title" title={CELEBRATION_STEPS_SUCCESS.heading}>
+          <img className="vs-key" src={KEY_IMAGES.values} alt="" />
           <p className="vs-card__text">{CELEBRATION_STEPS_SUCCESS.text}</p>
           <p className="vs-card__reward">{CELEBRATION_STEPS_SUCCESS.reward}</p>
           <JourneyProgress percent={CELEBRATION_STEPS_COMPLETION_PERCENT} />

@@ -46,9 +46,12 @@ import {
   useLevelPage,
   SceneBox,
   Popup,
+  CheckIcon,
+  RetryIcon,
   GoldButton,
   JourneyProgress,
 } from "./levelScene";
+import { KEY_IMAGES } from "./keyImages";
 import FinalCelebration, { Lantern } from "./FinalCelebration";
 import "../fonts/breuer-headline.css";
 import "./stage5.css";
@@ -670,10 +673,7 @@ export default function HallStage5() {
       ) : null}
 
       {phase === "story" ? (
-        <Popup labelId="gc-story-title">
-          <h2 id="gc-story-title" className="vs-card__title">
-            {GRAND_CELEBRATION_STORY.heading}
-          </h2>
+        <Popup labelId="gc-story-title" title={GRAND_CELEBRATION_STORY.heading}>
           <p className="vs-card__quote">{GRAND_CELEBRATION_STORY.quote}</p>
           {GRAND_CELEBRATION_STORY.paragraphs.map((p) => (
             <p key={p} className="vs-card__text">
@@ -688,34 +688,23 @@ export default function HallStage5() {
       ) : null}
 
       {popup?.type === "retry" ? (
-        <Popup labelId="gc-retry-title" onClose={() => setPopup(null)}>
-          <h2 id="gc-retry-title" className="vs-card__title">
-            {GRAND_CELEBRATION_RETRY.heading}
-          </h2>
+        <Popup labelId="gc-retry-title" title={GRAND_CELEBRATION_RETRY.heading} icon={<RetryIcon />} onClose={() => setPopup(null)}>
           <p className="vs-card__text">{GRAND_CELEBRATION_RETRY.text}</p>
           <GoldButton onClick={() => setPopup(null)}>{GRAND_CELEBRATION_RETRY.button}</GoldButton>
         </Popup>
       ) : null}
 
       {learningQuestion ? (
-        <Popup labelId="gc-learning-title" onClose={closeLearning}>
+        <Popup labelId="gc-learning-title" title={popup.word} icon={<CheckIcon />} iconTone="success" onClose={closeLearning}>
           <p className="vs-card__eyebrow">🏮 A lantern lights up!</p>
-          <h2 id="gc-learning-title" className="vs-card__title gc-learning-word">
-            {popup.word}
-          </h2>
           <p className="vs-card__text">{learningQuestion.learning}</p>
           <GoldButton onClick={closeLearning}>Continue</GoldButton>
         </Popup>
       ) : null}
 
       {phase === "success" ? (
-        <Popup labelId="gc-success-title">
-          <div className="vs-key" aria-hidden="true">
-            🗝️
-          </div>
-          <h2 id="gc-success-title" className="vs-card__title">
-            {GRAND_CELEBRATION_SUCCESS.heading}
-          </h2>
+        <Popup labelId="gc-success-title" title={GRAND_CELEBRATION_SUCCESS.heading}>
+          <img className="vs-key" src={KEY_IMAGES.wisdom} alt="" />
           <p className="vs-card__text">{GRAND_CELEBRATION_SUCCESS.text}</p>
           <p className="vs-card__reward">{GRAND_CELEBRATION_SUCCESS.reward}</p>
           <JourneyProgress percent={GRAND_CELEBRATION_COMPLETION_PERCENT} />

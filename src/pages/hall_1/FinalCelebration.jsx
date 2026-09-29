@@ -6,6 +6,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FINAL_SCREEN, JOURNEY_KEYS } from "./grandCelebrationData";
 import { GoldButton, JourneyProgress } from "./levelScene";
+import { KEY_IMAGES } from "./keyImages";
 import "./finalCelebration.css";
 
 /** Stage start times (ms from "Celebrate"); index = stage number. */
@@ -57,13 +58,8 @@ export function Lantern({ lit = false, className = "" }) {
   );
 }
 
-function Key({ glow }) {
-  return (
-    <svg className={`fc-key-svg${glow ? " is-glow" : ""}`} viewBox="0 0 64 28" aria-hidden="true">
-      <circle cx="12" cy="14" r="9" className="fc-key-metal" fill="none" strokeWidth="4" />
-      <path d="M21 14 H60 M50 14 V22 M56 14 V20" className="fc-key-metal" strokeWidth="4" />
-    </svg>
-  );
+function Key({ src, glow }) {
+  return <img className={`fc-key-img${glow ? " is-glow" : ""}`} src={src} alt="" draggable={false} />;
 }
 
 /** Simple celebrating people (arms up / waving / child), drawn as silhouettes. */
@@ -265,7 +261,7 @@ export default function FinalCelebration({
       <ol className="fc-keys" aria-label="Keys of Knowledge">
         {JOURNEY_KEYS.map((k, i) => (
           <li key={k.id} className={`fc-key${i === JOURNEY_KEYS.length - 1 ? " fc-key--new" : ""}`}>
-            <Key glow />
+            <Key src={KEY_IMAGES[k.id]} glow />
             <span className="fc-key__label">{k.label}</span>
           </li>
         ))}

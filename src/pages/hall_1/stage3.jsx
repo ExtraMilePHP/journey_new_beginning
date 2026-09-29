@@ -53,9 +53,11 @@ import {
   useLevelPage,
   SceneBox,
   Popup,
+  CheckIcon,
   GoldButton,
   JourneyProgress,
 } from "./levelScene";
+import { KEY_IMAGES } from "./keyImages";
 import "../fonts/breuer-headline.css";
 import "./stage3.css";
 
@@ -471,10 +473,7 @@ export default function HallStage3() {
       </div>
 
       {phase === "story" ? (
-        <Popup labelId="fm-story-title">
-          <h2 id="fm-story-title" className="vs-card__title">
-            {FESTIVAL_MARKET_STORY.heading}
-          </h2>
+        <Popup labelId="fm-story-title" title={FESTIVAL_MARKET_STORY.heading}>
           <p className="vs-card__quote">{FESTIVAL_MARKET_STORY.quote}</p>
           {FESTIVAL_MARKET_STORY.paragraphs.map((p) => (
             <p key={p} className="vs-card__text">
@@ -489,26 +488,18 @@ export default function HallStage3() {
       ) : null}
 
       {learning ? (
-        <Popup labelId="fm-learning-title" onClose={() => setLearningPair(null)}>
+        <Popup labelId="fm-learning-title" title={learning.learning.heading} icon={<CheckIcon />} iconTone="success" onClose={() => setLearningPair(null)}>
           <p className="vs-card__eyebrow">
             <span aria-hidden="true">{learning.emoji}</span> {learning.item} → {learning.meaning}
           </p>
-          <h2 id="fm-learning-title" className="vs-card__title">
-            {learning.learning.heading}
-          </h2>
           <p className="vs-card__text">{learning.learning.text}</p>
           <GoldButton onClick={() => setLearningPair(null)}>Continue</GoldButton>
         </Popup>
       ) : null}
 
       {phase === "success" ? (
-        <Popup labelId="fm-success-title">
-          <div className="vs-key" aria-hidden="true">
-            🗝️
-          </div>
-          <h2 id="fm-success-title" className="vs-card__title">
-            {FESTIVAL_MARKET_SUCCESS.heading}
-          </h2>
+        <Popup labelId="fm-success-title" title={FESTIVAL_MARKET_SUCCESS.heading}>
+          <img className="vs-key" src={KEY_IMAGES.symbolism} alt="" />
           <p className="vs-card__text">{FESTIVAL_MARKET_SUCCESS.text}</p>
           <p className="vs-card__reward">{FESTIVAL_MARKET_SUCCESS.reward}</p>
           <JourneyProgress percent={FESTIVAL_MARKET_COMPLETION_PERCENT} />
