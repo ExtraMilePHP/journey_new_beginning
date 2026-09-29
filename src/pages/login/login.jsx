@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../loginSlice";
 import "./login.css";
@@ -18,8 +18,6 @@ function Login() {
   const { status, user, error } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const isAdmin = searchParams.get("admin") === "true";
   const [beginLoading, setBeginLoading] = useState(false);
 
   const handleBeginPlay = useCallback(
@@ -35,12 +33,6 @@ function Login() {
   useEffect(() => {
     dispatch(loginUser());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (status === "succeeded" && user && isAdmin) {
-      navigate("/admin");
-    }
-  }, [status, user, isAdmin, navigate]);
 
   useEffect(() => {
     if (status === "succeeded" && user?.backButtonRedirect) {
@@ -66,7 +58,6 @@ function Login() {
 
   // show "already played" when login payload has gameover > 0 (DB stages.gameover)
   useEffect(() => {
-    if (isAdmin) return;
     if (status !== "succeeded" || !user) return;
     if (Number(user.gameover ?? 0) > 0) {
       const redirect = user.backButtonRedirect || "/";
@@ -74,7 +65,7 @@ function Login() {
         window.location.href = redirect;
       });
     }
-  }, [status, user, isAdmin]);
+  }, [status, user]);
 
   if (status === "loading") {
     return (

@@ -21,14 +21,13 @@ export function isHallStageScorePresent(stage, stageNumber) {
   return value != null && value !== "";
 }
 
-/** Routes for Hall of Champions stages 1–6. */
+/** Routes for the Hall 1 checkpoints (stages 1–5). */
 export const HALL1_STAGE_ROUTES = {
   1: "/hall-1/stage1",
   2: "/hall-1/stage2",
   3: "/hall-1/stage3",
   4: "/hall-1/stage4",
   5: "/hall-1/stage5",
-  6: "/hall-1/stage6",
 };
 
 /** Last checkpoint (Grand Celebration); its page also hosts the Final Screen. */

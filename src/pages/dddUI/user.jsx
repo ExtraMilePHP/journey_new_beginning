@@ -76,8 +76,6 @@ function USER({children }) {
       if (/^\/(?:login)?$/.test(location.pathname)) return;
       if (/^\/rules(?:\/)?$/.test(location.pathname)) return;
       if (/^\/hall-1(?:\/|$)/.test(location.pathname)) return;
-      if (/^\/complete(?:\/|$)/.test(location.pathname)) return;
-      if (/^\/final(?:\/|$)/.test(location.pathname)) return;
       if (/^\/stage1(?:\/|$)/.test(location.pathname)) return;
       if (/^\/leaderboard(?:\/|$)/.test(location.pathname)) return;
       const stageNum = parseStageNumberFromPath(location.pathname);
