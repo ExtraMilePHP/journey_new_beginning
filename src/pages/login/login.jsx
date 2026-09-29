@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import logoImg from "../../img/logo.png";
 import startBtnImg from "../img/button1.png";
 import backgroundDesk from "../../img/background.png";
-import backgroundMob from "../../img/mob.jpg";
+import backgroundMob from "../../img/mob.png";
 import {
   setupAppPageBodyBackground,
 } from "../game/gameStageBackground";

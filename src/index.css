@@ -57,7 +57,7 @@ body.common-bg {
 /* Portrait phones only: mob.png is tall; in landscape, keep desktop art (see themeBackgroundKeyForViewport). */
 @media (max-width: 768px) and (orientation: portrait) {
   body.common-bg:not(.stage1-escape-page) {
-    background: url("img/mob.jpg");
+    background: url("img/mob.png");
     background-repeat: no-repeat;
     background-size: 100% 100%;
     background-attachment: fixed;
