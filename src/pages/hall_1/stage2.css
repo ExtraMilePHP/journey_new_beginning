@@ -243,7 +243,7 @@
   .rc-cross {
     right: auto;
     left: 50%;
-    bottom: 1.5%;
+    bottom: 24%; /* in the free water strip above the plank tray */
     transform: translateX(-50%);
     width: min(60cqw, 240px);
   }

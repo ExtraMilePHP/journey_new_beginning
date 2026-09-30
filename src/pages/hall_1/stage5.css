@@ -435,7 +435,8 @@ body.gc-dragging * {
   }
 
   .gc-puzzle {
-    --gc-tile: min(11cqw, calc(88cqw / var(--gc-n, 8)));
+    /* Row = n tiles + gaps (14% each): 79cqw of tiles ≈ 90cqw wide. */
+    --gc-tile: min(11cqw, calc(79cqw / var(--gc-n, 8)));
 
     top: 13%;
     width: 94cqw;

@@ -414,7 +414,7 @@ export default function Hall1() {
         </p>
       ) : null}
 
-      {progressReady && activeHotspot && HOTSPOT_LABELS[activeHotspot] ? (
+      {progressReady && !rewardToast && activeHotspot && HOTSPOT_LABELS[activeHotspot] ? (
         <p className="hall1-hotspot-toast" role="status">
           Click: {HOTSPOT_LABELS[activeHotspot]}
         </p>

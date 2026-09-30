@@ -73,7 +73,7 @@ const HUB_UNLOCKS = "museum_archive";
 const TOTAL = RIVERSIDE_STATEMENTS.length;
 const EARN_ANIM_MS = 900;
 const SNAP_MS = 260;
-const WALK_MS = 3600;
+const WALK_MS = 5000;
 
 /**
  * The scene fills the screen, cropping only outside the band that holds the
@@ -106,9 +106,9 @@ const SCENE_STYLE = `
 .rc-ghost { pointer-events: none; cursor: grabbing; filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.45)); }
 .rc-walker { pointer-events: none; }
 /* Walk cycle: legs and arms swing from the hip / shoulder, body bobs per step. */
-.rc-walker__bob { animation: rc-bob 0.24s ease-in-out infinite alternate; }
-.rc-leg { transform-origin: 0px -42px; animation: rc-swing-leg 0.48s ease-in-out infinite alternate; }
-.rc-arm { transform-origin: 0px -68px; animation: rc-swing-arm 0.48s ease-in-out infinite alternate; }
+.rc-walker__bob { animation: rc-bob 0.32s ease-in-out infinite alternate; }
+.rc-leg { transform-origin: 0px -42px; animation: rc-swing-leg 0.64s ease-in-out infinite alternate; }
+.rc-arm { transform-origin: 0px -68px; animation: rc-swing-arm 0.64s ease-in-out infinite alternate; }
 .rc-leg--back, .rc-arm--front { animation-direction: alternate-reverse; }
 @keyframes rc-swing-leg { from { transform: rotate(26deg); } to { transform: rotate(-26deg); } }
 @keyframes rc-swing-arm { from { transform: rotate(22deg); } to { transform: rotate(-22deg); } }

@@ -369,8 +369,10 @@ body.cs-dragging * {
   filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.4));
 }
 
+/* The dragged copy is fully visible (the card left behind is the faded one). */
 .cs-ghost .cs-card {
   height: 100%;
+  opacity: 1;
   animation: none;
 }
 
@@ -504,14 +506,15 @@ body.cs-dragging * {
     filter: none;
   }
 
-  /* Step markers were placed against the scene image; the stairs sit behind
-     the flow panel here anyway. */
+  /* Step markers follow the full-screen backdrop (box measured from the
+     window in stage4.jsx), so they are pinned to the viewport. */
   .cs-ladder {
-    display: none;
+    position: fixed;
+    z-index: 0;
   }
 
   .cs-panels {
-    top: 33%;
+    top: 42%;
     bottom: calc(1% + min(60cqw, 250px) / 3.4 + 2cqw);
     display: flex;
     flex-direction: column;
@@ -640,16 +643,28 @@ body.cs-dragging * {
     font-size: 0.75rem;
   }
 
-  /* Subtitle sized to stay inside its bar (the plaque fits the wider line). */
+  /* Narrow, wrapped title plaque so it stays clear of the step lights that
+     run up the middle of the staircase. */
+  .cs-stage .vs-plaque {
+    width: 33cqw;
+  }
+
+  .cs-stage .vs-plaque__title {
+    font-size: 0.8rem;
+    white-space: normal;
+  }
+
   .cs-stage .vs-plaque__sub {
-    width: auto;
-    min-width: 84%;
-    font-size: 0.6rem;
+    width: 94%;
+    padding: 0.3em 0.5em;
+    font-size: 0.54rem;
+    line-height: 1.2;
+    white-space: normal;
   }
 
   /* Hint sits on the staircase, just above the flow panel. */
   .cs-hint {
-    bottom: 68%;
+    bottom: 59%;
     max-width: 94%;
     padding: 0.4em 1em;
     font-size: clamp(0.66rem, 3cqw, 0.82rem);

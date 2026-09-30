@@ -656,3 +656,8 @@
     box-shadow: 0 0 1cqw 0.3cqw var(--fc-bulb, #ffd76a);
   }
 }
+
+/* Keep the site header (logo + BACK) above the full-screen finale. */
+body:has(.fc-overlay) header.upperaction {
+  z-index: 1160;
+}

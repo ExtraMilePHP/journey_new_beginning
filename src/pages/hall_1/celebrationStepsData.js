@@ -137,9 +137,10 @@ export const STEP_LADDER = {
     w: 414,
     h: 896,
     steps: Array.from({ length: SLOT_COUNT }, (_, i) => ({
+      // Upper flight only: the lower stairs sit behind the flow panel on phones.
       x: 207,
-      y: 580 - i * 22,
-      r: 8 - i * 0.3,
+      y: 388 - i * 16.5,
+      r: 7 - i * 0.3,
     })),
   },
 };

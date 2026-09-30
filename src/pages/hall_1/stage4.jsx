@@ -68,15 +68,19 @@ const FULL_BOX = { left: 0, top: 0, width: "100%", height: "100%" };
 const DRAG_THRESHOLD = 6;
 const ALL_IDS = CELEBRATION_ACTIVITIES.map((a) => a.id);
 
-/** Box the background image occupies under `background-size: cover` (centred). */
-function useCoverBox(wrapRef, imgW, imgH) {
+/**
+ * Box the background image occupies under `background-size: cover` (centred).
+ * `viewport`: measure the window instead of the scene (phones, where the art
+ * is the full-screen page backdrop).
+ */
+function useCoverBox(wrapRef, imgW, imgH, viewport = false) {
   const [box, setBox] = useState(null);
   useEffect(() => {
     const wrap = wrapRef.current;
     if (!wrap) return undefined;
     const sync = () => {
-      const W = wrap.clientWidth;
-      const H = wrap.clientHeight;
+      const W = viewport ? window.innerWidth : wrap.clientWidth;
+      const H = viewport ? window.innerHeight : wrap.clientHeight;
       if (!W || !H) return;
       const scale = Math.max(W / imgW, H / imgH);
       const width = imgW * scale;
@@ -91,7 +95,7 @@ function useCoverBox(wrapRef, imgW, imgH) {
       ro?.disconnect();
       window.removeEventListener("resize", sync);
     };
-  }, [wrapRef, imgW, imgH]);
+  }, [wrapRef, imgW, imgH, viewport]);
   return box;
 }
 
@@ -141,7 +145,7 @@ export default function HallStage4() {
   const stageRef = useRef(null);
   const wrapRef = useRef(null);
   useLevelPage(stageRef, bgUrl);
-  const coverBox = useCoverBox(wrapRef, ladder.w, ladder.h);
+  const coverBox = useCoverBox(wrapRef, ladder.w, ladder.h, isMob);
 
   const [elapsedSec, setElapsedSec] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
@@ -412,6 +416,24 @@ export default function HallStage4() {
       const v = el.getAttribute("data-drop");
       return v === "pool" ? "pool" : Number(v);
     };
+    /* While a card is held near the top / bottom edge of the scrolling flow
+       list (phones), scroll the list so rows out of view can be reached. */
+    const EDGE = 36;
+    const autoScroll = () => {
+      const p = pressRef.current;
+      if (!p?.dragging) return;
+      const list = document.querySelector(".cs-flow__grid");
+      if (list && list.scrollHeight > list.clientHeight + 1) {
+        const r = list.getBoundingClientRect();
+        if (p.x >= r.left && p.x <= r.right) {
+          const down = p.y - (r.bottom - EDGE);
+          const up = r.top + EDGE - p.y;
+          if (down > 0 && p.y < r.bottom + 16) list.scrollTop += Math.min(3.5, 1 + down / 14);
+          else if (up > 0 && p.y > r.top - 16) list.scrollTop -= Math.min(3.5, 1 + up / 14);
+        }
+      }
+      p.raf = requestAnimationFrame(autoScroll);
+    };
     const onMove = (e) => {
       const p = pressRef.current;
       if (!p || e.pointerId !== p.pointerId) return;
@@ -422,6 +444,9 @@ export default function HallStage4() {
         document.body.classList.add("cs-dragging");
       }
       e.preventDefault();
+      p.x = e.clientX;
+      p.y = e.clientY;
+      if (!p.raf) p.raf = requestAnimationFrame(autoScroll);
       setDrag({
         id: p.id,
         from: p.from,
@@ -436,6 +461,7 @@ export default function HallStage4() {
       const p = pressRef.current;
       if (!p || e.pointerId !== p.pointerId) return;
       pressRef.current = null;
+      if (p.raf) cancelAnimationFrame(p.raf);
       if (!p.dragging) return; // a plain click; the button's onClick handles it
       document.body.classList.remove("cs-dragging");
       const target = e.type === "pointercancel" ? null : dropTargetAt(e.clientX, e.clientY);

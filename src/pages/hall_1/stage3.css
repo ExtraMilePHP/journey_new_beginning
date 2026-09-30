@@ -217,8 +217,22 @@
 /* ---------- phones ---------- */
 
 @media (max-width: 900px) and (orientation: portrait) {
+  /* One background only: the page (body) backdrop shows the phone art,
+     sharp and full-screen; the scene itself has no image of its own. */
   .fm-scene {
-    background-image: var(--fm-bg-mob);
+    background-image: none;
+  }
+
+  body.level-scene-page:has(.fm-stage)::before {
+    inset: 0;
+    filter: none;
+  }
+
+  /* Subtitle sized to stay inside its bar (the plaque fits the wider line). */
+  .fm-stage .vs-plaque__sub {
+    width: auto;
+    min-width: 84%;
+    font-size: 0.6rem;
   }
 
   .fm-board {
