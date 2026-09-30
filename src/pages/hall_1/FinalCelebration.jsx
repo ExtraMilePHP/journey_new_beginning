@@ -208,12 +208,6 @@ export default function FinalCelebration({
         </p>
       </section>
 
-      {!reached("final") ? (
-        <button type="button" className="fc-skip" onClick={() => setStage(at("final"))}>
-          Skip ›
-        </button>
-      ) : null}
-
       {reached("final") && step === "message" ? (
         <section className="fc-final" aria-live="polite">
           <h2 id="fc-final-title" className="fc-final__title">

@@ -318,7 +318,17 @@ export default function HallStage2() {
     ? totalScore
     : totalScore + liveProgressPoints(correct.length, TOTAL, RIVERSIDE_POINTS);
 
-  const currentStatement = RIVERSIDE_STATEMENTS.find((s) => !correct.includes(s.id)) || null;
+  /* Statements are asked in a random order each visit, so the answers do not
+     follow a fixed Myth / Fact pattern. (The server checks each by its id.) */
+  const [statementOrder] = useState(() => {
+    const order = [...RIVERSIDE_STATEMENTS];
+    for (let i = order.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    return order;
+  });
+  const currentStatement = statementOrder.find((s) => !correct.includes(s.id)) || null;
 
   /* ---------- quiz ---------- */
 
@@ -681,8 +691,8 @@ export default function HallStage2() {
         }
         const first = boxes[0];
         const last = boxes[boxes.length - 1];
-        // Figure is 100 units tall (WALKER_MARKUP); about twice a plank's height.
-        const scale = (first.h * 2) / 100;
+        // Figure is 100 units tall (WALKER_MARKUP); about three planks tall.
+        const scale = (first.h * 3) / 100;
         const walker = svg.ownerDocument.createElementNS(SVG_NS, "g");
         walker.setAttribute("class", "rc-walker");
         walker.innerHTML = WALKER_MARKUP;

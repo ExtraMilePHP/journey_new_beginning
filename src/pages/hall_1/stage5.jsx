@@ -62,6 +62,8 @@ const HUB_HOTSPOT_ID = "trophy_vault";
 
 const TOTAL = GRAND_CELEBRATION_QUESTIONS.length;
 const FULL_BOX = { left: 0, top: 0, width: "100%", height: "100%" };
+/** Seconds added to the timer for every hint used. */
+const HINT_PENALTY_SEC = 5;
 const DRAG_THRESHOLD = 6;
 
 /** Fresh tile state for a question: tiles start in the tray, slots empty. */
@@ -333,13 +335,27 @@ export default function HallStage5() {
 
   /* ---------- hint ---------- */
 
-  const requestHint = useCallback(async () => {
-    if (!canInteract || !question) return;
+  /** First free (not locked) space, or -1 when no hint can be given. */
+  const hintPosition = () => {
     const position = board.slots.findIndex((_, i) => !board.hinted.includes(i));
-    if (position === -1 || board.hinted.length >= board.slots.length - 1) {
+    return position === -1 || board.hinted.length >= board.slots.length - 1 ? -1 : position;
+  };
+
+  /** Hint button: ask first, since every hint costs HINT_PENALTY_SEC on the timer. */
+  const askHint = () => {
+    if (!canInteract || !question) return;
+    if (hintPosition() === -1) {
       setNote("No more hints for this word — you can do it!");
       return;
     }
+    setPopup({ type: "hint" });
+  };
+
+  const requestHint = useCallback(async () => {
+    setPopup(null);
+    if (phase !== "playing" || submitting || !question) return;
+    const position = hintPosition();
+    if (position === -1) return;
     setSubmitting(true);
     try {
       const { letter } = await requestGrandCelebrationHint({
@@ -359,14 +375,19 @@ export default function HallStage5() {
         slots[position] = tile.id;
         return { ...b, slots, hinted: [...b.hinted, position] };
       });
-      setNote("");
+      // Time penalty for using a hint.
+      elapsedRef.current += HINT_PENALTY_SEC;
+      setElapsedSec(elapsedRef.current);
+      setNote(`Hint used: +${HINT_PENALTY_SEC} seconds added to your time.`);
     } catch (err) {
       console.error("Grand Celebration hint:", err);
       setNote("Could not load a hint. Please try again.");
     } finally {
       setSubmitting(false);
     }
-  }, [canInteract, question, board, backendBase, adminToken]);
+    // hintPosition reads `board`, which is already a dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, submitting, question, board, backendBase, adminToken]);
 
   /* ---------- lock correct letters ---------- */
 
@@ -671,7 +692,7 @@ export default function HallStage5() {
               </div>
 
               <div className="gc-tools">
-                <button type="button" className="gc-tool" onClick={requestHint} disabled={!canInteract}>
+                <button type="button" className="gc-tool" onClick={askHint} disabled={!canInteract}>
                   <span aria-hidden="true">💡</span> Hint
                 </button>
                 <button type="button" className="gc-tool" onClick={clearTiles} disabled={!canInteract}>
@@ -734,6 +755,20 @@ export default function HallStage5() {
             <strong>Objective:</strong> {GRAND_CELEBRATION_STORY.objective}
           </p>
           <GoldButton onClick={() => setPhase("playing")}>{GRAND_CELEBRATION_STORY.button}</GoldButton>
+        </Popup>
+      ) : null}
+
+      {popup?.type === "hint" ? (
+        <Popup labelId="gc-hint-title" title="Use a Hint?" onClose={() => setPopup(null)}>
+          <p className="vs-card__text">
+            A hint places one correct letter for you, but adds{" "}
+            <strong>+{HINT_PENALTY_SEC} seconds</strong> to your time.
+          </p>
+          <p className="vs-card__text">Are you sure you want to use a hint?</p>
+          <div className="gc-confirm">
+            <GoldButton onClick={requestHint}>Yes, use hint</GoldButton>
+            <GoldButton onClick={() => setPopup(null)}>Cancel</GoldButton>
+          </div>
         </Popup>
       ) : null}
 

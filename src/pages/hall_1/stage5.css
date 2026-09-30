@@ -327,6 +327,21 @@ body.gc-dragging * {
   color: #ffe0cf;
 }
 
+/* Hint confirmation: Yes / Cancel side by side. */
+.gc-confirm {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+}
+
+.gc-confirm .vs-btn {
+  width: min(200px, 44%);
+  margin-top: 4px;
+  font-size: 0.85rem;
+}
+
 /* ---------- lantern bar ---------- */
 
 .gc-lanterns {

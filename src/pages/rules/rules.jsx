@@ -98,7 +98,7 @@ function UserRules() {
             onClick={handleContinue}
             style={{ backgroundImage: `url(${startBtnImg})` }}
           >
-            {nextLoading ? "LOADING…" : "START JOURNEY"}
+            {nextLoading ? "LOADING…" : "NEXT"}
           </button>
         </div>
       </div>

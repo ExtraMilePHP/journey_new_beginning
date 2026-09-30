@@ -567,21 +567,6 @@
   font-size: 0.9rem;
 }
 
-.fc-skip {
-  position: absolute;
-  z-index: 10;
-  right: 18px;
-  bottom: 18px;
-  padding: 8px 16px;
-  border: 1px solid rgba(243, 210, 122, 0.8);
-  border-radius: 999px;
-  background: rgba(11, 26, 51, 0.7);
-  color: var(--fc-gold-light);
-  font-family: inherit;
-  font-size: 0.95rem;
-  cursor: pointer;
-}
-
 /* ---------- phones ---------- */
 
 @media (max-width: 900px) and (orientation: portrait) {
