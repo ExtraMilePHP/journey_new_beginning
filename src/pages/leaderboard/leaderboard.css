@@ -19,9 +19,9 @@
   width: 100%;
   min-height: calc(100dvh - 72px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 56px 16px 12px;
+  padding: 92px 16px 12px;
   font-family: Georgia, "Times New Roman", serif;
   color: var(--lb-ink);
 }
@@ -38,23 +38,40 @@
   pointer-events: none;
 }
 
-/* ---------- page column (no popup frame) ---------- */
+/* ---------- board: everything sits inside the ornate msg.png frame ---------- */
 
 .lb-board {
+  /* 9-slice frame; --s = 1 image px. */
+  --s: calc(min(940px, 100vw - 32px) / 1536);
   position: relative;
   box-sizing: border-box;
-  width: min(960px, 100%);
+  width: calc(var(--s) * 1536);
+  min-height: calc(var(--s) * 640);
+  margin-top: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  padding: calc(var(--s) * 10 + 24px) calc(var(--s) * 40 + 6px) calc(var(--s) * 10 + 4px);
+  border-style: solid;
+  border-color: transparent;
+  border-width: calc(var(--s) * 140) calc(var(--s) * 80) calc(var(--s) * 148) calc(var(--s) * 78);
+  border-image-source: url("../hall_1/img/msg.png");
+  border-image-slice: 260 300 400 300 fill;
+  border-image-width: calc(var(--s) * 260) calc(var(--s) * 300) calc(var(--s) * 400)
+    calc(var(--s) * 300);
+  border-image-repeat: stretch;
+  filter: drop-shadow(0 16px 30px rgba(0, 0, 0, 0.45));
 }
 
-/* Navy "LEADERBOARD" ribbon heading the page. */
+/* Navy "LEADERBOARD" ribbon straddling the frame's top edge. */
 .lb-banner {
-  position: relative;
-  margin-bottom: 4px;
-  padding: 10px clamp(40px, 7vw, 80px) 12px;
+  position: absolute;
+  z-index: 2;
+  top: calc(var(--s) * -48 - 28px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px clamp(36px, 6vw, 72px) 10px;
   border: 3px solid var(--vs-gold);
   border-radius: 10px;
   background: linear-gradient(180deg, #1d4172 0%, var(--vs-navy-deep) 100%);
@@ -89,7 +106,7 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  font-size: clamp(1.5rem, 3.2vw, 2.6rem);
+  font-size: clamp(1.4rem, 3vw, 2.4rem);
   font-weight: 800;
   letter-spacing: 0.06em;
   line-height: 1.1;
@@ -107,10 +124,9 @@
   align-items: center;
   gap: 12px;
   margin: 0;
-  color: #fbf3df;
-  font-size: clamp(1rem, 1.8vw, 1.3rem);
+  color: var(--vs-navy-deep);
+  font-size: clamp(0.95rem, 1.6vw, 1.2rem);
   font-weight: 700;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
 }
 
 .lb-subtitle__gem {
@@ -124,28 +140,26 @@
 
 .lb-tabs {
   display: flex;
-  justify-content: center;
-  gap: 6px;
+  justify-content: flex-start;
   width: 100%;
-  margin-bottom: -12px; /* tabs sit on the table's top edge */
+  margin-bottom: -8px; /* tab sits on the table's top edge */
+  padding-left: 14%;
+  box-sizing: border-box;
   position: relative;
   z-index: 1;
 }
 
 .lb-tab {
-  min-width: min(240px, 44%);
-  padding: 6px 20px 8px;
+  margin: 0;
+  padding: 6px 34px 8px;
   border: 2px solid var(--vs-gold);
   border-bottom: 0;
   border-radius: 10px 10px 0 0;
-  background: linear-gradient(180deg, #f3e4c2 0%, #e2cc9b 100%);
-  color: #8a6a3a;
   font-family: inherit;
-  font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+  font-size: clamp(0.82rem, 1.4vw, 1.05rem);
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  cursor: pointer;
 }
 
 .lb-tab.is-active {
@@ -159,10 +173,10 @@
 .lb-panel {
   box-sizing: border-box;
   width: 100%;
-  border: 3px solid var(--vs-gold);
+  border: 2px solid var(--vs-gold);
   border-radius: 8px;
   background: #fbf1dc;
-  box-shadow: 0 0 0 2px #7a5212, 0 6px 16px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 0 1px #7a5212, 0 4px 10px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 }
 
@@ -414,14 +428,23 @@
 
   .lb-page {
     align-items: flex-start;
-    padding: 96px 12px 24px;
+    padding: 110px 12px 24px;
   }
 
   .lb-board {
-    gap: 10px;
+    --s: calc((100vw - 24px) / 1024);
+    width: calc(100vw - 24px);
+    min-height: calc(var(--s) * 600);
+    padding: calc(var(--s) * 30 + 22px) calc(var(--s) * 24 + 2px) calc(var(--s) * 30 + 4px);
+    border-width: calc(var(--s) * 100) calc(var(--s) * 75) calc(var(--s) * 66) calc(var(--s) * 76);
+    border-image-source: url("../hall_1/img/msg_mob.png");
+    border-image-slice: 250 300 336 300 fill;
+    border-image-width: calc(var(--s) * 250) calc(var(--s) * 300) calc(var(--s) * 336)
+      calc(var(--s) * 300);
   }
 
   .lb-banner {
+    top: calc(var(--s) * -36 - 22px);
     padding: 8px 28px 10px;
   }
 
@@ -434,9 +457,7 @@
   }
 
   .lb-tab {
-    min-width: 0;
-    flex: 1;
-    padding: 7px 8px 9px;
+    padding: 6px 18px 8px;
     font-size: 0.78rem;
   }
 

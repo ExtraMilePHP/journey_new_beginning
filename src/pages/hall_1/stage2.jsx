@@ -73,15 +73,16 @@ const HUB_UNLOCKS = "museum_archive";
 const TOTAL = RIVERSIDE_STATEMENTS.length;
 const EARN_ANIM_MS = 900;
 const SNAP_MS = 260;
-const WALK_MS = 2800;
+const WALK_MS = 3600;
 
 /**
- * Desktop fills the screen, cropping only outside the band that holds the
- * bridge and the plank tray; phones show the whole art.
+ * The scene fills the screen, cropping only outside the band that holds the
+ * bridge and the plank tray. On phones the tray runs edge to edge, so only a
+ * little sky and the bottom strip can go (otherwise the art stretches slightly).
  */
 const SCENE_FIT = {
   desk: { w: 1920, h: 1080, fill: true, safe: { x0: 0.04, x1: 0.96, y0: 0.12, y1: 0.95 } },
-  mob: { w: 414, h: 896, fill: false },
+  mob: { w: 414, h: 896, fill: true, safe: { x0: 0.01, x1: 0.99, y0: 0.04, y1: 0.985 } },
 };
 
 /** Styles injected into the SVG document (it cannot see page CSS). */
@@ -91,11 +92,9 @@ const SCENE_STYLE = `
 .rc-slot { opacity: 0; pointer-events: none; }
 .rc-slot.is-placed { opacity: 1; }
 .rc-slot.is-snap { animation: rc-snap 0.4s ease-out; }
-.rc-outline { fill: rgba(255, 215, 106, 0.08); stroke: #f3d27a; stroke-width: 2.5; stroke-dasharray: 9 6;
-  vector-effect: non-scaling-stroke; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-svg.rc-build .rc-outline { opacity: 0.6; }
-svg.rc-build .rc-outline.is-next { opacity: 1; fill: rgba(255, 215, 106, 0.28); animation: rc-pulse 1.2s ease-in-out infinite; }
-svg.rc-build .rc-outline.is-placed { opacity: 0; animation: none; }
+.rc-outline { display: none; } /* slot markers kept for placement logic, not shown */
+.rc-frame { transition: opacity 0.3s ease; pointer-events: none; }
+.rc-frame.is-placed { opacity: 0; }
 .rc-tray { transition: opacity 0.4s ease, filter 0.4s ease; outline: none; }
 .rc-tray.is-locked { opacity: 0.35; filter: grayscale(1) brightness(0.8); }
 .rc-tray.is-earned { filter: drop-shadow(0 0 6px rgba(255, 215, 106, 0.9)); }
@@ -106,7 +105,14 @@ svg.rc-build .rc-outline.is-placed { opacity: 0; animation: none; }
 .rc-tray.is-used { opacity: 0; pointer-events: none; }
 .rc-ghost { pointer-events: none; cursor: grabbing; filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.45)); }
 .rc-walker { pointer-events: none; }
-@keyframes rc-pulse { 0%, 100% { fill-opacity: 0.6; } 50% { fill-opacity: 1; } }
+/* Walk cycle: legs and arms swing from the hip / shoulder, body bobs per step. */
+.rc-walker__bob { animation: rc-bob 0.24s ease-in-out infinite alternate; }
+.rc-leg { transform-origin: 0px -42px; animation: rc-swing-leg 0.48s ease-in-out infinite alternate; }
+.rc-arm { transform-origin: 0px -68px; animation: rc-swing-arm 0.48s ease-in-out infinite alternate; }
+.rc-leg--back, .rc-arm--front { animation-direction: alternate-reverse; }
+@keyframes rc-swing-leg { from { transform: rotate(26deg); } to { transform: rotate(-26deg); } }
+@keyframes rc-swing-arm { from { transform: rotate(22deg); } to { transform: rotate(-22deg); } }
+@keyframes rc-bob { from { transform: translateY(0px); } to { transform: translateY(-2.4px); } }
 @keyframes rc-snap { 0% { filter: brightness(1.8) drop-shadow(0 0 10px #ffd76a); } 100% { filter: none; } }
 @keyframes rc-earn {
   0% { opacity: 0.35; filter: grayscale(1); }
@@ -133,6 +139,42 @@ function tween(from, to, ms, onFrame, onDone) {
 }
 
 const centerOf = (b) => ({ x: b.x + b.w / 2, y: b.y + b.h / 2 });
+
+/**
+ * Traveller for the bridge crossing: a festive figure facing right, drawn in a
+ * 100-unit-tall box with the feet at (0, 0). Limbs are separate groups so the
+ * injected CSS (SCENE_STYLE) can swing them as a walk cycle.
+ */
+const WALKER_MARKUP = `
+<g class="rc-walker__bob">
+  <ellipse cx="0" cy="1" rx="15" ry="3.4" fill="rgba(0,0,0,0.28)"/>
+  <g class="rc-arm rc-arm--back">
+    <rect x="-3.2" y="-69" width="6.4" height="25" rx="3.2" fill="#b8431f"/>
+    <circle cx="0" cy="-43" r="3.4" fill="#c98f5e"/>
+  </g>
+  <g class="rc-leg rc-leg--back">
+    <rect x="-4.2" y="-43" width="8.4" height="40" rx="4.2" fill="#ece0c4"/>
+    <path d="M-4.5 -4 h10 a5 3.6 0 0 1 5 3.6 v0.4 h-15 z" fill="#5a3416"/>
+  </g>
+  <path d="M-10 -72 q10 -6 20 0 l2.5 36 q-12.5 5 -25 0 z" fill="#e2622b"/>
+  <path d="M-12.4 -37 q12.4 5 24.8 0 l0.3 3.4 q-12.7 5 -25.4 0 z" fill="#f3d27a"/>
+  <path d="M0 -74 v34" stroke="#f3d27a" stroke-width="1.6" fill="none"/>
+  <path d="M-8 -70 q11 10 17 30" stroke="#1d4172" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <rect x="5" y="-44" width="9" height="10" rx="2" fill="#1d4172" stroke="#f3d27a" stroke-width="0.8"/>
+  <g class="rc-leg rc-leg--front">
+    <rect x="-4.2" y="-43" width="8.4" height="40" rx="4.2" fill="#fbf3df"/>
+    <path d="M-4.5 -4 h10 a5 3.6 0 0 1 5 3.6 v0.4 h-15 z" fill="#6e401c"/>
+  </g>
+  <rect x="-2.6" y="-78" width="5.2" height="6" fill="#c98f5e"/>
+  <circle cx="1" cy="-86" r="9.2" fill="#dba774"/>
+  <path d="M-8.4 -87 a9.6 9.6 0 0 1 17.6 -4.4 q-7 -1.2 -11 1.6 q-3.4 2.4 -3.2 7 q-2.8 -1 -3.4 -4.2 z" fill="#2a1a10"/>
+  <circle cx="5.2" cy="-86.4" r="1.1" fill="#2a1a10"/>
+  <path d="M4 -81.4 q2.4 1.4 4.4 0" stroke="#8a4a2a" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+  <g class="rc-arm rc-arm--front">
+    <rect x="-3.4" y="-69" width="6.8" height="25" rx="3.4" fill="#e2622b"/>
+    <circle cx="0" cy="-43" r="3.6" fill="#dba774"/>
+  </g>
+</g>`;
 
 /** Hall Stage 2 — Level 2: Riverside Crossing (Myth or Fact + build the bridge). */
 export default function HallStage2() {
@@ -538,6 +580,25 @@ export default function HallStage2() {
       return box;
     });
 
+    // The art's own yellow slot frames (.cls-1, no ids): tag each with the slot
+    // it sits over so it can fade out once that plank is placed.
+    doc.querySelectorAll(".cls-1").forEach((frame) => {
+      const cx = centerOf(elementBox(frame)).x;
+      let best = -1;
+      let bestDist = Infinity;
+      svg.__rcSlotBoxes.forEach((box, i) => {
+        if (!box) return;
+        const dist = Math.abs(centerOf(box).x - cx);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = i;
+        }
+      });
+      if (best === -1) return;
+      frame.classList.add("rc-frame");
+      frame.setAttribute("data-frame", String(best));
+    });
+
     svg.__rcTrayBoxes = ids.tray.map((id, i) => {
       const el = doc.getElementById(id);
       if (!el) {
@@ -586,6 +647,9 @@ export default function HallStage2() {
       const outline = svg.querySelector(`[data-outline="${i}"]`);
       outline?.classList.toggle("is-placed", i < placed);
       outline?.classList.toggle("is-next", i === placed);
+      svg
+        .querySelectorAll(`[data-frame="${i}"]`)
+        .forEach((frame) => frame.classList.toggle("is-placed", i < placed));
     });
 
     ids.tray.forEach((id, i) => {
@@ -617,25 +681,31 @@ export default function HallStage2() {
         }
         const first = boxes[0];
         const last = boxes[boxes.length - 1];
-        const size = first.h * 2.2;
-        const walker = svg.ownerDocument.createElementNS(SVG_NS, "text");
+        // Figure is 100 units tall (WALKER_MARKUP); about twice a plank's height.
+        const scale = (first.h * 2) / 100;
+        const walker = svg.ownerDocument.createElementNS(SVG_NS, "g");
         walker.setAttribute("class", "rc-walker");
-        walker.setAttribute("font-size", String(size));
-        walker.setAttribute("text-anchor", "middle");
-        walker.textContent = "🚶";
+        walker.innerHTML = WALKER_MARKUP;
         svg.appendChild(walker);
-        const y = first.y + first.h * 0.7;
-        tween(
-          { x: first.x - first.w, y },
-          { x: last.x + last.w * 2, y },
-          WALK_MS,
-          // Mirror so the walker faces right, toward the Festival Market.
-          (p) => walker.setAttribute("transform", `translate(${p.x} ${p.y}) scale(-1 1)`),
-          () => {
+        // Feet on the centre line of the deck, nudged 2 units up.
+        const y = first.y + first.h / 2 - 2;
+        const fromX = first.x - first.w * 1.5;
+        const toX = last.x + last.w * 2.5;
+        const start = performance.now();
+        // Steady pace (no easing) so the steps read as walking; fade at both ends.
+        const step = (now) => {
+          const t = Math.min(1, (now - start) / WALK_MS);
+          const x = fromX + (toX - fromX) * t;
+          walker.setAttribute("transform", `translate(${x} ${y}) scale(${scale})`);
+          walker.setAttribute("opacity", String(Math.min(1, t / 0.08, (1 - t) / 0.08)));
+          if (t < 1) {
+            requestAnimationFrame(step);
+          } else {
             walker.remove();
             resolve();
           }
-        );
+        };
+        requestAnimationFrame(step);
       }),
     []
   );
@@ -714,7 +784,7 @@ export default function HallStage2() {
   const counterLabel = building ? "Placed" : "Planks";
 
   return (
-    <div className="vs-stage rc-stage" ref={stageRef}>
+    <div className="vs-stage vs-stage--full-bleed rc-stage" ref={stageRef}>
       <div className="stage-escape-hud">
         <StageTimer timeLabel={formatSecondsToClock(elapsedSec)} points={displayPoints} />
       </div>

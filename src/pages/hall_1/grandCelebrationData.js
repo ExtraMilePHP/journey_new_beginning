@@ -209,6 +209,14 @@ export async function submitGrandCelebrationAnswer({
   return { correct: Boolean(data.correct) };
 }
 
+/** Save the post-game feedback label on the player's stages row. */
+export async function submitGameFeedback({ backendBase, adminToken, storedUser, feedback }) {
+  await postJson(backendBase, adminToken, "welcomeStageFeedback", {
+    userId: storedUser?.userId || storedUser?.userid || storedUser?.id,
+    feedback,
+  });
+}
+
 /** One correct letter at `position` → { position, letter }. */
 export async function requestGrandCelebrationHint({ backendBase, adminToken, questionId, position }) {
   const data = await postJson(backendBase, adminToken, "grandCelebrationHint", {

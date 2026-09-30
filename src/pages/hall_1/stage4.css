@@ -1,6 +1,12 @@
 /* Level 4 — Celebration Steps (arrange the sequence). Shared plaques / popups:
    levelScene.css. Sizes use cqw (1% of the stage width, from .vs-scene-box). */
 
+/* Sizing unit for this level: 1% of the scene width, capped by the window
+   height so the panels also shrink on wide-but-short screens. */
+.cs-stage {
+  --u: min(1cqw, 1.85vh);
+}
+
 .cs-scene {
   background-image: var(--cs-bg-desk);
   background-position: center;
@@ -69,14 +75,14 @@ body.cs-dragging * {
   flex-direction: column;
   pointer-events: auto;
   border: 3px solid var(--vs-gold);
-  border-radius: 1.2cqw;
-  box-shadow: 0 1cqw 2.4cqw rgba(0, 0, 0, 0.4);
+  border-radius: calc(var(--u) * 1.2);
+  box-shadow: 0 calc(var(--u) * 1) calc(var(--u) * 2.4) rgba(0, 0, 0, 0.4);
 }
 
 .cs-panel__title {
-  margin: 0 0 0.8cqw;
+  margin: 0 0 calc(var(--u) * 0.8);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1rem, 1.7cqw, 2rem);
+  font-size: clamp(0.95rem, calc(var(--u) * 1.45), 1.6rem);
   font-weight: 800;
   font-variant: small-caps;
   letter-spacing: 0.04em;
@@ -89,11 +95,11 @@ body.cs-dragging * {
 }
 
 .cs-pool {
-  left: 1.5cqw;
-  top: calc(var(--vs-pull, 0px) + 11cqw);
-  bottom: 12%;
-  width: 25cqw;
-  padding: 1.2cqw 1cqw 0.8cqw;
+  left: calc(var(--u) * 1.5);
+  top: calc(var(--vs-pull, 0px) + var(--u) * 6.8);
+  bottom: 3%;
+  width: calc(var(--u) * 26.5);
+  padding: calc(var(--u) * 1.2) calc(var(--u) * 1) calc(var(--u) * 0.8);
   background: linear-gradient(180deg, #16325a 0%, var(--vs-navy-deep) 100%);
   transition: box-shadow 0.2s ease;
 }
@@ -107,46 +113,47 @@ body.cs-dragging * {
   flex: 1 1 auto;
   min-height: 0;
   margin: 0;
-  padding: 0 0.4cqw 0 0;
+  padding: 0 calc(var(--u) * 0.4) 0 0;
   list-style: none;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 0.6cqw;
+  gap: calc(var(--u) * 0.6);
   scrollbar-color: var(--vs-gold) transparent;
 }
 
 .cs-pool__empty,
 .cs-pool__count {
-  margin: 0.6cqw 0 0;
+  margin: calc(var(--u) * 0.6) 0 0;
   color: #f4efe6;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(0.72rem, 1cqw, 1.05rem);
+  font-size: clamp(0.7rem, calc(var(--u) * 0.9), 0.95rem);
   text-align: center;
 }
 
 .cs-return {
-  margin: 0.6cqw auto 0;
+  margin: calc(var(--u) * 0.6) auto 0;
   padding: 0.4em 1.2em;
   border: 1px solid var(--vs-gold-light);
   border-radius: 999px;
   background: transparent;
   color: var(--vs-gold-light);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(0.72rem, 0.95cqw, 1rem);
+  font-size: clamp(0.72rem, calc(var(--u) * 0.95), 1rem);
   cursor: pointer;
 }
 
 .cs-flow {
-  right: 1.5cqw;
-  top: max(14%, calc(var(--vs-pull, 0px) + 5.5cqw));
-  width: 37cqw;
-  padding: 1.2cqw 1.4cqw 1.4cqw;
+  right: calc(var(--u) * 1.5);
+  /* Level with the Activities panel; ends above the Submit button. */
+  top: calc(var(--vs-pull, 0px) + var(--u) * 6.8);
+  width: calc(var(--u) * 37);
+  padding: calc(var(--u) * 1.2) calc(var(--u) * 1.4) calc(var(--u) * 1.4);
   background:
     radial-gradient(ellipse at center, rgba(255, 255, 255, 0.5), transparent 70%),
     linear-gradient(180deg, #fdf6e3 0%, #f0e0b8 100%);
   outline: 1px solid rgba(217, 169, 59, 0.6);
-  outline-offset: -0.7cqw;
+  outline-offset: -calc(var(--u) * 0.7);
 }
 
 /* Two columns: steps 1–6 on the left, 7–12 on the right. */
@@ -158,28 +165,28 @@ body.cs-dragging * {
   grid-template-columns: 1fr 1fr;
   grid-template-rows: repeat(6, auto);
   grid-auto-flow: column;
-  gap: 0.7cqw 1.2cqw;
+  gap: calc(var(--u) * 0.7) calc(var(--u) * 1.2);
 }
 
 .cs-slot {
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
-  gap: 0.6cqw;
+  gap: calc(var(--u) * 0.6);
 }
 
 .cs-slot__num {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.4cqw;
+  width: calc(var(--u) * 2.1);
   aspect-ratio: 1;
   border: 2px solid var(--vs-gold);
   border-radius: 50%;
   background: var(--vs-navy-deep);
   color: var(--vs-gold-light);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(0.72rem, 1.05cqw, 1.2rem);
+  font-size: clamp(0.68rem, calc(var(--u) * 0.92), 1rem);
   font-weight: 800;
   transition: box-shadow 0.4s ease;
 }
@@ -201,8 +208,8 @@ body.cs-dragging * {
 }
 
 .cs-slot__drop {
-  min-height: 4.3cqw;
-  border-radius: 0.7cqw;
+  min-height: calc(var(--u) * 3.5);
+  border-radius: calc(var(--u) * 0.7);
 }
 
 .cs-slot.is-locked .cs-slot__drop {
@@ -213,7 +220,7 @@ body.cs-dragging * {
 .cs-pick:focus-visible {
   outline: 3px solid var(--vs-navy);
   outline-offset: 2px;
-  border-radius: 0.7cqw;
+  border-radius: calc(var(--u) * 0.7);
 }
 
 .cs-pool .cs-pick:focus-visible {
@@ -225,12 +232,12 @@ body.cs-dragging * {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  min-height: 4.3cqw;
+  min-height: calc(var(--u) * 3.5);
   border: 2px dashed rgba(16, 40, 74, 0.35);
-  border-radius: 0.7cqw;
+  border-radius: calc(var(--u) * 0.7);
   color: rgba(42, 33, 22, 0.6);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(0.66rem, 0.95cqw, 1rem);
+  font-size: clamp(0.64rem, calc(var(--u) * 0.85), 0.9rem);
   transition: border-color 0.15s ease, background 0.15s ease;
 }
 
@@ -250,16 +257,16 @@ body.cs-dragging * {
 .cs-card {
   display: flex;
   align-items: center;
-  gap: 0.7cqw;
+  gap: calc(var(--u) * 0.7);
   box-sizing: border-box;
-  min-height: 4.3cqw;
-  padding: 0.5cqw 0.8cqw;
+  min-height: calc(var(--u) * 3.5);
+  padding: calc(var(--u) * 0.5) calc(var(--u) * 0.8);
   border: 2px solid var(--vs-gold);
-  border-radius: 0.7cqw;
+  border-radius: calc(var(--u) * 0.7);
   background: linear-gradient(180deg, #fffaf0 0%, #f3e3bd 100%);
   color: var(--vs-navy-deep);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(0.72rem, 1.05cqw, 1.15rem);
+  font-size: clamp(0.7rem, calc(var(--u) * 0.95), 1rem);
   line-height: 1.2;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
   transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
@@ -375,7 +382,7 @@ body.cs-dragging * {
   bottom: 2.5%;
   transform: translateX(-50%);
   box-sizing: border-box;
-  max-width: min(42cqw, 92%);
+  max-width: min(calc(var(--u) * 42), 92%);
   margin: 0;
   padding: 0.55em 2em;
   border: 2px solid var(--vs-gold);
@@ -383,7 +390,7 @@ body.cs-dragging * {
   background: linear-gradient(180deg, #16325a 0%, var(--vs-navy-deep) 100%);
   color: #f4efe6;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(0.78rem, 1.1cqw, 1.25rem);
+  font-size: clamp(0.74rem, calc(var(--u) * 0.95), 1.05rem);
   text-align: center;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
@@ -395,16 +402,16 @@ body.cs-dragging * {
 
 .cs-submit {
   position: absolute;
-  right: 1.5cqw;
+  right: calc(var(--u) * 1.5);
   bottom: 1.5%;
-  width: clamp(180px, 18cqw, 320px);
+  width: clamp(150px, calc(var(--u) * 14), 260px);
   pointer-events: auto;
 }
 
 .cs-submit .vs-btn {
   width: 100%;
   margin: 0;
-  font-size: clamp(0.85rem, 1.35cqw, 1.4rem);
+  font-size: clamp(0.78rem, calc(var(--u) * 1.05), 1.1rem);
 }
 
 /* ---------- reduced motion ---------- */
@@ -424,22 +431,94 @@ body.cs-dragging * {
   }
 }
 
-/* ---------- phones: panels stacked in a scrolling column ---------- */
+/* ---------- desktop / landscape: title plaque sized to its text ---------- */
+
+/* Smaller title, subtitle and counter; the plaque grows to the wider of its
+   two lines so the subtitle stays inside its navy bar. */
+@media (min-width: 901px), (orientation: landscape) {
+  .cs-stage .vs-plaque {
+    width: max-content;
+    min-width: clamp(150px, calc(var(--u) * 16), 300px);
+  }
+
+  .cs-stage .vs-plaque__title {
+    font-size: clamp(0.95rem, calc(var(--u) * 1.5), 1.6rem);
+  }
+
+  .cs-stage .vs-plaque__sub {
+    width: auto;
+    min-width: 84%;
+    max-width: 100%;
+    font-size: clamp(0.6rem, calc(var(--u) * 0.88), 0.9rem);
+  }
+
+  .cs-stage .vs-counter {
+    font-size: clamp(0.78rem, calc(var(--u) * 1.15), 1.15rem);
+  }
+
+  /* Both panels share the same top and bottom edge (the bottom clears the
+     Submit button); the flow rows spread evenly over the panel height. */
+  .cs-pool,
+  .cs-flow {
+    bottom: calc(1.5% + var(--u) * 5.2);
+  }
+
+  .cs-flow__grid {
+    flex: 1 1 auto;
+    align-content: space-between;
+  }
+
+  /* Roomier rows in the Celebration Flow panel (it has the space below it). */
+  .cs-flow .cs-slot__drop,
+  .cs-flow .cs-slot__empty,
+  .cs-flow .cs-card {
+    min-height: calc(var(--u) * 4.3);
+  }
+
+  .cs-flow .cs-slot__num {
+    width: calc(var(--u) * 2.4);
+  }
+
+  .cs-flow .cs-slot__empty {
+    font-size: clamp(0.66rem, calc(var(--u) * 0.92), 0.98rem);
+  }
+}
+
+/* ---------- phones (portrait), after stage4/ref.png ----------
+   Staircase on top; below it the Celebration Flow panel (one scrolling
+   column), a horizontal strip of activities, then the Submit button. */
 
 @media (max-width: 900px) and (orientation: portrait) {
+  .cs-stage {
+    --u: 1cqw;
+  }
+
+  /* One background only: the page (body) backdrop shows the phone art,
+     sharp and full-screen; the scene itself has no image of its own. */
   .cs-scene {
-    background-image: var(--cs-bg-mob);
+    background-image: none;
+  }
+
+  body.level-scene-page:has(.cs-stage)::before {
+    inset: 0;
+    filter: none;
+  }
+
+  /* Step markers were placed against the scene image; the stairs sit behind
+     the flow panel here anyway. */
+  .cs-ladder {
+    display: none;
   }
 
   .cs-panels {
-    top: 13%;
-    bottom: 17%;
+    top: 33%;
+    bottom: calc(1% + min(60cqw, 250px) / 3.4 + 2cqw);
     display: flex;
     flex-direction: column;
-    gap: 3cqw;
-    padding: 0 3cqw 2cqw;
-    overflow-y: auto;
-    pointer-events: auto;
+    gap: 2cqw;
+    padding: 0 2.5cqw;
+    overflow: hidden;
+    pointer-events: none;
   }
 
   .cs-pool,
@@ -447,40 +526,44 @@ body.cs-dragging * {
     position: static;
     width: auto;
     border-radius: 3cqw;
-  }
-
-  .cs-flow {
-    order: -1;
-    padding: 3cqw;
-  }
-
-  .cs-pool {
-    padding: 3cqw;
+    pointer-events: auto;
   }
 
   .cs-panel__title {
-    margin-bottom: 2cqw;
+    margin-bottom: 1.6cqw;
     font-size: 1.05rem;
   }
 
-  .cs-pool__list {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2cqw;
-    overflow: visible;
+  /* Celebration Flow: fills the space, its 12 rows scroll inside. */
+  .cs-flow {
+    order: -1;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 2.5cqw 2.5cqw 3cqw;
+    outline-offset: -1.4cqw;
   }
 
   .cs-flow__grid {
-    gap: 2cqw 2.5cqw;
+    flex: 1 1 auto;
+    min-height: 0;
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-auto-flow: row;
+    align-content: start;
+    gap: 1.8cqw;
+    padding-right: 1.5cqw;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: var(--vs-gold) transparent;
   }
 
   .cs-slot {
-    gap: 1.5cqw;
+    gap: 2.2cqw;
   }
 
   .cs-slot__num {
-    width: 6.5cqw;
-    font-size: 0.72rem;
+    width: 8cqw;
+    font-size: 0.85rem;
   }
 
   .cs-card,
@@ -490,27 +573,85 @@ body.cs-dragging * {
     border-radius: 2cqw;
   }
 
+  /* Empty and locked rows let a swipe scroll the list; movable cards drag. */
+  .cs-slot__drop:has(.cs-slot__empty),
+  .cs-slot.is-locked .cs-slot__drop {
+    touch-action: pan-y;
+  }
+
   .cs-card {
-    gap: 1.5cqw;
-    padding: 1.5cqw 2cqw;
-    font-size: clamp(0.66rem, 3.1cqw, 0.85rem);
+    gap: 2cqw;
+    padding: 1.5cqw 2.5cqw;
+    font-size: clamp(0.74rem, 3.5cqw, 0.95rem);
   }
 
   .cs-slot__empty {
-    font-size: 0.66rem;
+    font-size: 0.78rem;
   }
 
-  .cs-pool__count,
-  .cs-pool__empty,
+  /* Activities: one row that scrolls sideways; drag a card up into the flow. */
+  .cs-pool {
+    flex: 0 0 auto;
+    padding: 2cqw 2.5cqw 2.2cqw;
+  }
+
+  .cs-pool .cs-panel__title {
+    margin-bottom: 1.4cqw;
+    font-size: 0.9rem;
+  }
+
+  .cs-pool__list {
+    flex: 0 0 auto;
+    flex-direction: row;
+    gap: 2cqw;
+    padding: 0 0 1cqw;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior: contain;
+  }
+
+  .cs-pool__list > li {
+    flex: 0 0 38cqw;
+  }
+
+  .cs-pool__list > li.cs-pool__empty {
+    flex: 1 1 auto;
+    margin: 0;
+    padding: 3cqw 0;
+  }
+
+  .cs-pool .cs-pick {
+    height: 100%;
+    touch-action: pan-x;
+  }
+
+  .cs-pool .cs-card {
+    height: 100%;
+    min-height: 12cqw;
+    font-size: clamp(0.7rem, 3.2cqw, 0.88rem);
+  }
+
+  .cs-pool__count {
+    display: none;
+  }
+
   .cs-return {
-    margin-top: 2cqw;
+    margin-top: 1.4cqw;
     font-size: 0.75rem;
   }
 
+  /* Subtitle sized to stay inside its bar (the plaque fits the wider line). */
+  .cs-stage .vs-plaque__sub {
+    width: auto;
+    min-width: 84%;
+    font-size: 0.6rem;
+  }
+
+  /* Hint sits on the staircase, just above the flow panel. */
   .cs-hint {
-    bottom: 10%;
+    bottom: 68%;
     max-width: 94%;
-    padding: 0.45em 1em;
+    padding: 0.4em 1em;
     font-size: clamp(0.66rem, 3cqw, 0.82rem);
   }
 
@@ -519,6 +660,6 @@ body.cs-dragging * {
     left: 50%;
     bottom: 1%;
     transform: translateX(-50%);
-    width: min(60cqw, 240px);
+    width: min(60cqw, 250px);
   }
 }

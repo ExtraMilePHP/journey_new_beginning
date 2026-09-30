@@ -105,6 +105,16 @@ function unionIds(a, b) {
   return [...new Set([...(a || []), ...(b || [])])];
 }
 
+/** Random display order of option indices (Fisher–Yates). */
+function shuffledIndices(count) {
+  const order = Array.from({ length: count }, (_, i) => i);
+  for (let i = order.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}
+
 /**
  * Scene viewBox sizes. `safe` (fractions of the art) is the band holding every
  * hidden item and the tray; the scene may crop outside it to fill the screen.
@@ -203,7 +213,10 @@ export default function HallStage1() {
   const [found, setFound] = useState([]);
 
   const [activeItemId, setActiveItemId] = useState(null);
+  /** Original option index (answers are checked by its letter), not the display slot. */
   const [selectedOption, setSelectedOption] = useState(null);
+  /** Shuffled display order of the open question's options (original indices). */
+  const [optionOrder, setOptionOrder] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [answerError, setAnswerError] = useState("");
   /** null | { type: "retry" } | { type: "learning", itemId } */
@@ -429,6 +442,7 @@ export default function HallStage1() {
   itemClickRef.current = (itemId) => {
     if (phase !== "playing" || activeItemId || popup) return;
     if (!ITEM_BY_ID[itemId] || foundRef.current.includes(itemId)) return;
+    setOptionOrder(shuffledIndices(ITEM_BY_ID[itemId].options.length));
     setActiveItemId(itemId);
     setSelectedOption(null);
     setAnswerError("");
@@ -682,7 +696,7 @@ export default function HallStage1() {
             role="radiogroup"
             aria-labelledby="vs-question"
           >
-            {activeItem.options.map((text, i) => (
+            {optionOrder.map((i) => (
               <button
                 key={OPTION_LETTERS[i]}
                 type="button"
@@ -692,7 +706,7 @@ export default function HallStage1() {
                 onClick={() => setSelectedOption(i)}
                 disabled={submitting}
               >
-                <span className="vs-option__text">{text}</span>
+                <span className="vs-option__text">{activeItem.options[i]}</span>
               </button>
             ))}
           </div>

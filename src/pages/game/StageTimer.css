@@ -1,4 +1,4 @@
-/* Shared stage timer + points — single gold-on-black pill */
+/* Shared stage timer + points — navy pill with gold rules, as the game plaques */
 
 .stage-escape-hud {
   position: fixed;
@@ -20,12 +20,12 @@
   align-items: center;
   gap: 10px;
   padding: 7px 16px 7px 12px;
-  border-radius: 5px;
-  background: #000000;
-  border: 1px solid #8c6c3e;
-  box-shadow: none;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #16325a 0%, #0b1a33 100%);
+  border: 2px solid #d9a93b;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
   font-family: Georgia, "Times New Roman", Times, serif;
-  color: #b8924a;
+  color: #f3d27a;
   pointer-events: none;
   user-select: none;
 }
@@ -52,7 +52,7 @@
   justify-content: center;
   width: 20px;
   height: 20px;
-  color: #b8924a;
+  color: #f3d27a;
   flex-shrink: 0;
 }
 
@@ -69,7 +69,7 @@
   letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
   line-height: 1;
-  color: #b8924a;
+  color: #f3d27a;
 }
 
 .stage-escape-timer__value {
@@ -83,7 +83,7 @@
 }
 
 .stage-escape-timer__divider {
-  color: #8c6c3e;
+  color: #d9a93b;
   font-size: 1.15rem;
   line-height: 1;
   opacity: 0.9;
@@ -111,7 +111,7 @@
   .stage-escape-timer {
     padding: 6px 12px 6px 10px;
     gap: 8px;
-    border-radius: 5px;
+    border-radius: 8px;
   }
 
   .stage-escape-timer__icon,

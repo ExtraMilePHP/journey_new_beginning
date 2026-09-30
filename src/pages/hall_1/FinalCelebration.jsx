@@ -1,27 +1,27 @@
 /**
  * Grand Celebration finale: a staged, full-screen animation that ends on the
- * Final Screen. Stages: keys glow → arch opens → lanterns → lights → rangoli →
- * banners → confetti → fireworks → silhouettes → Final Screen.
+ * Final Screen. Stages: Keys of Knowledge panel → arch opens → lanterns →
+ * lights → banners → confetti → fireworks → Final Screen → feedback.
  */
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FINAL_SCREEN, JOURNEY_KEYS } from "./grandCelebrationData";
 import { GoldButton, JourneyProgress } from "./levelScene";
 import { KEY_IMAGES } from "./keyImages";
+import lampGold from "./stage5/lamp_gold.png";
+import lampGrey from "./stage5/lamp_grey.png";
 import "./finalCelebration.css";
 
 /** Stage start times (ms from "Celebrate"); index = stage number. */
-const TIMELINE = [0, 2400, 3800, 5400, 6400, 7400, 8400, 9000, 9800, 12200];
-const STAGES = [
-  "keys",
-  "arch",
-  "lanterns",
-  "lights",
-  "rangoli",
-  "banners",
-  "confetti",
-  "fireworks",
-  "people",
-  "final",
+const TIMELINE = [0, 3800, 5200, 6800, 7800, 8800, 9400, 11800];
+const STAGES = ["keys", "arch", "lanterns", "lights", "banners", "confetti", "fireworks", "final"];
+
+/** Post-game feedback choices; `value` is what the server stores. */
+const FEEDBACK_OPTIONS = [
+  { value: "Meh", emoji: "😐" },
+  { value: "Okay", emoji: "🙂" },
+  { value: "Fun", emoji: "😄" },
+  { value: "Loved it", emoji: "😍" },
+  { value: "Epic!", emoji: "🤩" },
 ];
 const at = (name) => STAGES.indexOf(name);
 
@@ -31,87 +31,17 @@ const BANNER_COLORS = ["#c0392b", "#f2a31b", "#1f7a8c", "#8e44ad", "#e67e22", "#
 /** Hanging festival lantern; `lit` adds the warm glow. */
 export function Lantern({ lit = false, className = "" }) {
   return (
-    <svg
+    <img
       className={`fc-lantern-svg${lit ? " is-lit" : ""} ${className}`}
-      viewBox="0 0 40 72"
-      aria-hidden="true"
-    >
-      <defs>
-        <radialGradient id="fcLanternGlow" cx="50%" cy="50%" r="55%">
-          <stop offset="0%" stopColor="#fff6cf" />
-          <stop offset="55%" stopColor="#ffc947" />
-          <stop offset="100%" stopColor="#e08a12" />
-        </radialGradient>
-      </defs>
-      <circle cx="20" cy="4" r="3" fill="none" strokeWidth="1.6" className="fc-lantern-metal" />
-      <path d="M11 14 L29 14 L25 8 L15 8 Z" className="fc-lantern-metal fc-lantern-fill" />
-      <rect x="9" y="14" width="22" height="34" rx="6" className="fc-lantern-body" />
-      <path
-        d="M20 18 L20 44 M13 20 Q20 31 13 42 M27 20 Q20 31 27 42"
-        fill="none"
-        strokeWidth="1.2"
-        className="fc-lantern-metal"
-      />
-      <path d="M11 48 L29 48 L26 54 L14 54 Z" className="fc-lantern-metal fc-lantern-fill" />
-      <path d="M20 54 L20 60 M17 60 L23 60 L22 70 L18 70 Z" className="fc-lantern-metal fc-lantern-fill" />
-    </svg>
+      src={lit ? lampGold : lampGrey}
+      alt=""
+      draggable={false}
+    />
   );
 }
 
 function Key({ src, glow }) {
   return <img className={`fc-key-img${glow ? " is-glow" : ""}`} src={src} alt="" draggable={false} />;
-}
-
-/** Simple celebrating people (arms up / waving / child), drawn as silhouettes. */
-const PEOPLE = [
-  { x: 6, s: 1, arms: "up" },
-  { x: 15, s: 0.72, arms: "wave" },
-  { x: 24, s: 1.05, arms: "side" },
-  { x: 36, s: 0.95, arms: "up" },
-  { x: 47, s: 0.7, arms: "wave" },
-  { x: 57, s: 1.1, arms: "side" },
-  { x: 68, s: 0.98, arms: "up" },
-  { x: 79, s: 0.75, arms: "wave" },
-  { x: 90, s: 1.02, arms: "up" },
-];
-
-function Person({ arms }) {
-  const armPath =
-    arms === "up"
-      ? "M14 30 L6 8 M26 30 L34 8"
-      : arms === "wave"
-      ? "M14 30 L4 40 M26 30 L36 10"
-      : "M14 30 L8 50 M26 30 L32 50";
-  return (
-    <svg viewBox="0 0 40 110" className="fc-person-svg" aria-hidden="true">
-      <circle cx="20" cy="14" r="9" />
-      <path d="M11 28 Q20 22 29 28 L31 70 L9 70 Z" />
-      <path d={armPath} strokeWidth="6" strokeLinecap="round" fill="none" className="fc-person-limb" />
-      <path d="M14 68 L12 106 M26 68 L28 106" strokeWidth="7" strokeLinecap="round" fill="none" className="fc-person-limb" />
-    </svg>
-  );
-}
-
-function Rangoli() {
-  const petals = Array.from({ length: 12 }, (_, i) => i * 30);
-  const inner = Array.from({ length: 8 }, (_, i) => i * 45);
-  return (
-    <svg viewBox="-100 -100 200 200" className="fc-rangoli-svg" aria-hidden="true">
-      <circle r="96" fill="#1f7a8c" opacity="0.85" />
-      {petals.map((a) => (
-        <ellipse key={a} rx="16" ry="44" cy="-46" fill="#f2a31b" transform={`rotate(${a})`} />
-      ))}
-      {petals.map((a) => (
-        <ellipse key={`r${a}`} rx="9" ry="30" cy="-44" fill="#e2563d" transform={`rotate(${a + 15})`} />
-      ))}
-      <circle r="42" fill="#8e44ad" />
-      {inner.map((a) => (
-        <ellipse key={`i${a}`} rx="8" ry="22" cy="-22" fill="#f3d27a" transform={`rotate(${a})`} />
-      ))}
-      <circle r="12" fill="#c0392b" />
-      <circle r="5" fill="#fff6cf" />
-    </svg>
-  );
 }
 
 function Firework({ x, y, color, delay }) {
@@ -126,9 +56,8 @@ function Firework({ x, y, color, delay }) {
 
 export default function FinalCelebration({
   bgUrl,
-  leaderboardEnabled,
-  onHome,
-  onLeaderboard,
+  onNext,
+  onSubmitFeedback,
   onFinalShown,
   startAtFinal = false,
 }) {
@@ -138,6 +67,25 @@ export default function FinalCelebration({
   );
   const [stage, setStage] = useState(startAtFinal || reducedMotion ? at("final") : 0);
   const finalShownRef = useRef(false);
+  /** "message" (final screen) → "feedback" → onNext() */
+  const [step, setStep] = useState("message");
+  const [feedback, setFeedback] = useState("");
+  const [sending, setSending] = useState(false);
+  const [feedbackError, setFeedbackError] = useState("");
+
+  const sendFeedback = async () => {
+    if (!feedback || sending) return;
+    setSending(true);
+    setFeedbackError("");
+    try {
+      await onSubmitFeedback?.(feedback);
+      onNext?.();
+    } catch (err) {
+      console.error("Feedback save:", err);
+      setFeedbackError("Could not save your feedback. Please try again.");
+      setSending(false);
+    }
+  };
 
   useEffect(() => {
     if (stage >= at("final")) return undefined;
@@ -202,10 +150,6 @@ export default function FinalCelebration({
         ))}
       </div>
 
-      <div className="fc-rangoli" aria-hidden="true">
-        <Rangoli />
-      </div>
-
       <div className="fc-fireworks" aria-hidden="true">
         {reached("fireworks") ? (
           <>
@@ -238,18 +182,6 @@ export default function FinalCelebration({
           : null}
       </div>
 
-      <div className="fc-people" aria-hidden="true">
-        {PEOPLE.map((p, i) => (
-          <span
-            key={i}
-            className="fc-person"
-            style={{ left: `${p.x}%`, "--fc-s": p.s, animationDelay: `${i * 0.12}s, ${0.8 + (i % 3) * 0.25}s` }}
-          >
-            <Person arms={p.arms} />
-          </span>
-        ))}
-      </div>
-
       {/* Entrance arch: curtains part to reveal the venue. */}
       <div className="fc-arch" aria-hidden="true">
         <span className="fc-curtain fc-curtain--left" />
@@ -257,15 +189,24 @@ export default function FinalCelebration({
         <span className="fc-arch__frame" />
       </div>
 
-      {/* The five Keys of Knowledge; the Key of Wisdom joins, then all glow. */}
-      <ol className="fc-keys" aria-label="Keys of Knowledge">
-        {JOURNEY_KEYS.map((k, i) => (
-          <li key={k.id} className={`fc-key${i === JOURNEY_KEYS.length - 1 ? " fc-key--new" : ""}`}>
-            <Key src={KEY_IMAGES[k.id]} glow />
-            <span className="fc-key__label">{k.label}</span>
-          </li>
-        ))}
-      </ol>
+      {/* Keys of Knowledge panel; the Key of Wisdom joins last, then it fades. */}
+      <section className="fc-keys" aria-label="Keys of Knowledge">
+        <header className="fc-keys__banner">
+          <h2 className="fc-keys__title">Keys of Knowledge</h2>
+        </header>
+        <p className="fc-keys__sub">You collected every key on your journey.</p>
+        <ol className="fc-keys__list">
+          {JOURNEY_KEYS.map((k, i) => (
+            <li key={k.id} className={`fc-key${i === JOURNEY_KEYS.length - 1 ? " fc-key--new" : ""}`}>
+              <Key src={KEY_IMAGES[k.id]} glow />
+              <span className="fc-key__label">{k.label}</span>
+            </li>
+          ))}
+        </ol>
+        <p className="fc-keys__count">
+          {JOURNEY_KEYS.length} of {JOURNEY_KEYS.length} collected
+        </p>
+      </section>
 
       {!reached("final") ? (
         <button type="button" className="fc-skip" onClick={() => setStage(at("final"))}>
@@ -273,7 +214,7 @@ export default function FinalCelebration({
         </button>
       ) : null}
 
-      {reached("final") ? (
+      {reached("final") && step === "message" ? (
         <section className="fc-final" aria-live="polite">
           <h2 id="fc-final-title" className="fc-final__title">
             {FINAL_SCREEN.heading}
@@ -285,10 +226,44 @@ export default function FinalCelebration({
           ))}
           <JourneyProgress percent={100} />
           <div className="fc-final__actions">
-            {leaderboardEnabled ? (
-              <GoldButton onClick={onLeaderboard}>Leaderboard</GoldButton>
-            ) : null}
-            <GoldButton onClick={onHome}>Home</GoldButton>
+            <GoldButton onClick={() => setStep("feedback")}>Next</GoldButton>
+          </div>
+        </section>
+      ) : null}
+
+      {reached("final") && step === "feedback" ? (
+        <section className="fc-final fc-final--feedback" aria-live="polite">
+          <h2 id="fc-final-title" className="fc-final__title">
+            How was your journey?
+          </h2>
+          <p className="fc-final__text">Pick the one that fits best, then continue.</p>
+          <div className="fc-feedback" role="radiogroup" aria-labelledby="fc-final-title">
+            {FEEDBACK_OPTIONS.map((o) => (
+              <button
+                key={o.value}
+                type="button"
+                role="radio"
+                aria-checked={feedback === o.value}
+                className={`fc-feedback__option${feedback === o.value ? " is-selected" : ""}`}
+                onClick={() => setFeedback(o.value)}
+                disabled={sending}
+              >
+                <span className="fc-feedback__emoji" aria-hidden="true">
+                  {o.emoji}
+                </span>
+                <span className="fc-feedback__label">{o.value}</span>
+              </button>
+            ))}
+          </div>
+          {feedbackError ? (
+            <p className="fc-feedback__error" role="alert">
+              {feedbackError}
+            </p>
+          ) : null}
+          <div className="fc-final__actions">
+            <GoldButton onClick={sendFeedback} disabled={!feedback || sending}>
+              {sending ? "Saving…" : "Submit"}
+            </GoldButton>
           </div>
         </section>
       ) : null}

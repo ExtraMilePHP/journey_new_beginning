@@ -116,15 +116,10 @@
   pointer-events: none;
 }
 
-.fm-card__emoji {
-  font-size: 3.4cqw;
-  line-height: 1;
-}
-
 .fm-card__label {
   color: var(--vs-navy-deep);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(0.62rem, 0.85cqw, 1rem);
+  font-size: clamp(0.56rem, calc(0.85cqw - 2px), calc(1rem - 2px));
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -133,7 +128,7 @@
 .fm-card__meaning {
   color: var(--vs-navy-deep);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(0.7rem, 1.15cqw, 1.35rem);
+  font-size: clamp(0.62rem, calc(1.15cqw - 2px), calc(1.35rem - 2px));
   font-weight: 800;
   font-variant: small-caps;
   letter-spacing: 0.03em;
@@ -197,6 +192,28 @@
   }
 }
 
+/* ---------- desktop / landscape: title plaque sized to its text ---------- */
+
+/* Smaller title and subtitle; the plaque grows to the wider of the two, so
+   "Match every symbol with its meaning" stays inside its navy bar. */
+@media (min-width: 901px), (orientation: landscape) {
+  .fm-stage .vs-plaque {
+    width: max-content;
+    min-width: clamp(150px, 16cqw, 300px);
+  }
+
+  .fm-stage .vs-plaque__title {
+    font-size: clamp(0.95rem, 1.5cqw, 1.6rem);
+  }
+
+  .fm-stage .vs-plaque__sub {
+    width: auto;
+    min-width: 84%;
+    max-width: 100%;
+    font-size: clamp(0.6rem, 0.85cqw, 0.9rem);
+  }
+}
+
 /* ---------- phones ---------- */
 
 @media (max-width: 900px) and (orientation: portrait) {
@@ -214,10 +231,6 @@
 
   .fm-card__face {
     padding: 12% 8%;
-  }
-
-  .fm-card__emoji {
-    font-size: 8cqw;
   }
 
   .fm-card__label {

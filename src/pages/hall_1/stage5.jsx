@@ -30,6 +30,7 @@ import {
   requestLeaderboardSubmit,
   submitGrandCelebrationAnswer,
   requestGrandCelebrationHint,
+  submitGameFeedback,
 } from "./grandCelebrationData";
 import {
   formatSecondsToClock,
@@ -367,6 +368,46 @@ export default function HallStage5() {
     }
   }, [canInteract, question, board, backendBase, adminToken]);
 
+  /* ---------- lock correct letters ---------- */
+
+  /** Correct letter per position, per question (asked from the server once). */
+  const lettersRef = useRef({});
+  const pendingRef = useRef(new Set());
+
+  /* A letter dropped on its correct space locks there (same state as a hint)
+     and can no longer be moved or cleared. */
+  useEffect(() => {
+    if (phase !== "playing" || !question || !backendBase || !adminToken) return;
+    const qid = question.id;
+    const tiles = board.tiles;
+    const known = (lettersRef.current[qid] = lettersRef.current[qid] || {});
+    const lockIfCorrect = (i) =>
+      setBoard((b) => {
+        const cur = b.slots[i];
+        if (b.tiles !== tiles || cur == null || b.hinted.includes(i)) return b;
+        if (b.tiles[cur].letter !== known[i]) return b;
+        return { ...b, hinted: [...b.hinted, i] };
+      });
+
+    board.slots.forEach((tileId, i) => {
+      if (tileId == null || board.hinted.includes(i)) return;
+      if (known[i] !== undefined) {
+        if (tiles[tileId].letter === known[i]) lockIfCorrect(i);
+        return;
+      }
+      const key = `${qid}:${i}`;
+      if (pendingRef.current.has(key)) return;
+      pendingRef.current.add(key);
+      requestGrandCelebrationHint({ backendBase, adminToken, questionId: qid, position: i })
+        .then(({ letter }) => {
+          known[i] = letter;
+          lockIfCorrect(i);
+        })
+        .catch(() => {})
+        .finally(() => pendingRef.current.delete(key));
+    });
+  }, [board, question, phase, backendBase, adminToken]);
+
   /* ---------- submit ---------- */
 
   const commitSolved = useCallback((id) => {
@@ -508,6 +549,15 @@ export default function HallStage5() {
     });
   }, [totalScore, storedUser]);
 
+  /** Demo players have no stages row, so their feedback is not stored. */
+  const submitFeedback = useCallback(
+    async (feedback) => {
+      if (isDemoBypass) return;
+      await submitGameFeedback({ backendBase, adminToken, storedUser, feedback });
+    },
+    [isDemoBypass, backendBase, adminToken, storedUser]
+  );
+
   const goHome = () => {
     const home = storedUser?.backButtonRedirect || process.env.REACT_APP_BASE_URL;
     if (home) window.location.assign(home);
@@ -612,7 +662,7 @@ export default function HallStage5() {
                       data-gc-drop={hinted ? undefined : String(i)}
                       onPointerDown={(e) => tile && onTilePointerDown(e, tileId)}
                       onClick={() => !justDragged() && tapSlot(i)}
-                      aria-label={`Space ${i + 1}: ${tile ? tile.letter : "empty"}${hinted ? " (hint)" : ""}`}
+                      aria-label={`Space ${i + 1}: ${tile ? tile.letter : "empty"}${hinted ? " (locked)" : ""}`}
                     >
                       {tile ? renderTile(tile, drag?.tileId === tileId ? " is-lifted" : "") : null}
                     </button>
@@ -717,10 +767,9 @@ export default function HallStage5() {
         <FinalCelebration
           bgUrl={bgUrl}
           startAtFinal={finaleAtEnd}
-          leaderboardEnabled={leaderboardEnabled}
           onFinalShown={onFinalShown}
-          onHome={goHome}
-          onLeaderboard={() => navigate("/leaderboard")}
+          onSubmitFeedback={submitFeedback}
+          onNext={() => (leaderboardEnabled ? navigate("/leaderboard") : goHome())}
         />
       ) : null}
     </div>

@@ -189,11 +189,24 @@
   }
 }
 
+/* Instruction line on a navy pill so it stays readable over the scene. */
+.rc-hint {
+  padding: 0.45em 1.4em;
+  border: 2px solid var(--vs-gold);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #16325a 0%, var(--vs-navy-deep) 100%);
+  color: #f4efe6;
+  text-shadow: none;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
 /* ---------- phones (whole portrait scene, narrower cqw) ---------- */
 
 @media (max-width: 900px) and (orientation: portrait) {
+  /* The scene now reaches up behind the header: keep the quiz below the
+     header, the floating timer and the title / counter row. */
   .rc-quiz {
-    top: 12%;
+    top: max(12%, calc(var(--vs-pull) + var(--vs-hud-h, 0px) + 60px));
     width: 90cqw;
     gap: 2.4cqw;
   }

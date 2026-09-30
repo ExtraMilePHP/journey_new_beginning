@@ -77,13 +77,13 @@ function CardFace({ card }) {
   }
   return (
     <>
-      {pair.image ? (
-        <img className="fm-card__art" src={pair.image} alt="" draggable={false} />
-      ) : (
-        <span className="fm-card__emoji" aria-hidden="true">
-          {pair.emoji}
-        </span>
-      )}
+      <img
+        className="fm-card__art"
+        src={pair.image}
+        alt=""
+        draggable={false}
+        style={pair.artScale ? { transform: `scale(${pair.artScale})` } : undefined}
+      />
       <span className="fm-card__label">{pair.item}</span>
     </>
   );

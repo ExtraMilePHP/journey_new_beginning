@@ -137,8 +137,6 @@ function Leaderboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(() => readSessionUserId());
-  /** "top" | "mine" */
-  const [tab, setTab] = useState("top");
 
   const backendBase = useMemo(
     () => String(process.env.REACT_APP_BACKEND_URL || "").replace(/\/+$/, ""),
@@ -234,8 +232,7 @@ function Leaderboard() {
   );
 
   const topRows = useMemo(() => buildTopRows(rows, currentUserId), [rows, currentUserId]);
-  const myRow = useMemo(() => rows.find(isYou) || null, [rows, isYou]);
-  const shownRows = tab === "top" ? topRows : myRow ? [myRow] : [];
+  const shownRows = topRows;
 
 
   let body;
@@ -244,7 +241,7 @@ function Leaderboard() {
   else if (!shownRows.length) {
     body = (
       <p className="lb-status">
-        {tab === "top" ? "No scores yet." : "Your rank will appear here once you start the journey."}
+        No scores yet.
       </p>
     );
   } else {
@@ -286,39 +283,9 @@ function Leaderboard() {
           <span className="lb-subtitle__gem" aria-hidden="true" />
         </p>
 
-        <div className="lb-tabs" role="tablist" aria-label="Leaderboard view">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === "top"}
-            className={`lb-tab${tab === "top" ? " is-active" : ""}`}
-            onClick={() => setTab("top")}
-          >
-            Top Players
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === "mine"}
-            className={`lb-tab${tab === "mine" ? " is-active" : ""}`}
-            onClick={() => setTab("mine")}
-          >
-            My Rank
-          </button>
-        </div>
-
-        <div className="lb-panel" role="tabpanel">
+        <div className="lb-panel">
           {body}
         </div>
-
-        <footer className="lb-footer">
-          <p className="lb-note">
-            <span className="lb-note__icon" aria-hidden="true">
-              i
-            </span>
-            Ranks are based on score, then completion time.
-          </p>
-        </footer>
       </section>
     </div>
   );

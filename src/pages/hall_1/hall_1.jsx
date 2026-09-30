@@ -62,12 +62,12 @@ const HALL1_LOCATIONS = {
 /**
  * Scene fit, as in the level stages: the art covers the screen (behind the
  * header too), cropping only outside `safe` — the band holding every
- * location label and pin (fractions of the art). Desktop never crops top or
- * bottom: on screens wider than 16:9 the whole art is stretched to fit.
+ * location label and pin (fractions of the art). Neither layout crops top or
+ * bottom: on screens wider than the art, the whole art is stretched to fit.
  */
 const HALL1_FIT = {
   desk: { w: 1920, h: 1080, fill: true, safe: { x0: 0.1, x1: 0.9, y0: 0, y1: 1 } },
-  mob: { w: 414, h: 896, fill: true, safe: { x0: 0.2, x1: 0.9, y0: 0.19, y1: 0.82 } },
+  mob: { w: 414, h: 896, fill: true, safe: { x0: 0.2, x1: 0.9, y0: 0, y1: 1 } },
 };
 
 function setLayerVisible(el, visible) {
@@ -277,26 +277,33 @@ export default function Hall1() {
     [navigate, stageRecord]
   );
 
+  /**
+   * Apply progress to the loaded SVG. Returns false (nothing touched) until the
+   * current SVG is fully parsed: the pins sit at the end of these very large
+   * files, and after a desktop ↔ phone switch the <object> briefly still holds
+   * the previous document.
+   */
   const bindHotspots = useCallback(() => {
     const obj = objectRef.current;
-    if (!obj || !progressReady) return;
+    if (!obj || !progressReady) return false;
     let doc = null;
     try {
       doc = obj.contentDocument;
     } catch {
       doc = null;
     }
-    if (!doc) return;
+    if (!doc || doc.readyState !== "complete") return false;
+    const file = hallSvgUrl.split("/").pop();
+    if (!String(doc.URL || "").split("?")[0].endsWith(file)) return false;
 
     const svg = doc.querySelector("svg");
-    if (svg) {
-      svg.style.width = "100%";
-      svg.style.height = "100%";
-      svg.__vsBound = true; // lets useApplySceneFit set the fitted viewBox
-    }
+    if (!svg || !doc.getElementById(HALL1_LOCATIONS.trophy_vault.pin)) return false;
+    svg.style.width = "100%";
+    svg.style.height = "100%";
+    svg.__vsBound = true; // lets useApplySceneFit set the fitted viewBox
 
     ensureHallHotspotStyles(doc);
-    const layout = obj.data && String(obj.data).endsWith("main_mob.svg") ? "mob" : "desk";
+    const layout = file === "main_mob.svg" ? "mob" : "desk";
     const completedSet = new Set(completedHotspots);
     const byId = (layerId) => doc.getElementById(layerId);
 
@@ -348,21 +355,28 @@ export default function Hall1() {
 
     setSvgReady(true);
     setBindVersion((v) => v + 1);
-  }, [handleHotspotClick, activeHotspot, completedHotspots, progressReady]);
+    return true;
+  }, [handleHotspotClick, activeHotspot, completedHotspots, progressReady, hallSvgUrl]);
 
   useApplySceneFit(objectRef, sceneFit, svgReady, bindVersion);
 
+  // Bind on load, and poll until it succeeds (the load event can fire before
+  // this effect attaches, or for the previous document during a layout switch).
   useEffect(() => {
     const obj = objectRef.current;
     if (!obj) return undefined;
 
-    if (obj.contentDocument?.querySelector("svg")) {
-      bindHotspots();
+    const onLoad = () => bindHotspots();
+    obj.addEventListener("load", onLoad);
+    let poll = 0;
+    if (!bindHotspots()) {
+      poll = window.setInterval(() => {
+        if (bindHotspots()) window.clearInterval(poll);
+      }, 300);
     }
-
-    obj.addEventListener("load", bindHotspots);
     return () => {
-      obj.removeEventListener("load", bindHotspots);
+      obj.removeEventListener("load", onLoad);
+      window.clearInterval(poll);
     };
   }, [bindHotspots, hallSvgUrl]);
 
@@ -388,7 +402,7 @@ export default function Hall1() {
 
         {!svgReady ? (
           <p className="hall1-loading" aria-live="polite">
-            Loading hall…
+            Loading…
           </p>
         ) : null}
       </div>

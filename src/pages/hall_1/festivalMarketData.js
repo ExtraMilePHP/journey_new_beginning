@@ -1,7 +1,6 @@
 /**
  * Level 3 — Festival Market (memory match: 8 festive items + 8 meanings).
- * Item art reuses the Village Square images; Gift and Streamers use emoji
- * until illustrated art is supplied.
+ * Item art reuses the Village Square images, plus gift and streamer art.
  */
 import diyaImg from "./stage1/diya.png";
 import flowersImg from "./stage1/flower_garland.png";
@@ -9,6 +8,8 @@ import rangoliImg from "./stage1/rangoli_colors.png";
 import sweetsImg from "./stage1/sweet_box.png";
 import lanternImg from "./stage1/paper_lantern.png";
 import toranImg from "./stage1/mango_leaf_toran.png";
+import giftImg from "./stage1/gify.png";
+import streamersImg from "./stage1/streamer.png";
 import deskBg from "./stage3/stage3_desk.png";
 import mobBg from "./stage3/stage3_mob.png";
 import cardFront from "./stage3/front.png";
@@ -66,7 +67,9 @@ export const FESTIVAL_MARKET_PAIRS = [
     id: "gift",
     item: "Gift",
     emoji: "🎁",
-    image: null,
+    image: giftImg,
+    // The art sits inside wide transparent margins; enlarge to match the others.
+    artScale: 1.3,
     meaning: "Appreciation & Sharing",
     learning: {
       heading: "The Joy of Giving",
@@ -99,7 +102,8 @@ export const FESTIVAL_MARKET_PAIRS = [
     id: "streamers",
     item: "Streamers",
     emoji: "🎊",
-    image: null,
+    image: streamersImg,
+    artScale: 1.15,
     meaning: "Celebration & Happiness",
     learning: {
       heading: "Adding Colour to the Moment",
