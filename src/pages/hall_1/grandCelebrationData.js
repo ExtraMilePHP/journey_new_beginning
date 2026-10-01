@@ -11,7 +11,8 @@ export { deskBg as GRAND_CELEBRATION_DESK_BG, mobBg as GRAND_CELEBRATION_MOB_BG 
 export const GRAND_CELEBRATION_PUZZLE_ID = "grand_celebration";
 
 /** Points written to DB `stage5` when every word is solved. */
-export const GRAND_CELEBRATION_POINTS = 100;
+/* 5 points per correct word solved (8 × 5); the live counter adds them one by one. */
+export const GRAND_CELEBRATION_POINTS = 40;
 
 /** Journey completion after the final checkpoint. */
 export const GRAND_CELEBRATION_COMPLETION_PERCENT = 100;

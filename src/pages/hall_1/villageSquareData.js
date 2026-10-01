@@ -15,7 +15,8 @@ import lanternImg from "./stage1/paper_lantern.png";
 export const VILLAGE_SQUARE_PUZZLE_ID = "village_square";
 
 /** Points written to DB `stage1` when all items are collected. */
-export const VILLAGE_SQUARE_POINTS = 100;
+/* 5 points per correct item found (8 × 5); the live counter adds them one by one. */
+export const VILLAGE_SQUARE_POINTS = 40;
 
 /** Journey completion shown after this checkpoint (1 of 5). */
 export const VILLAGE_SQUARE_COMPLETION_PERCENT = 20;

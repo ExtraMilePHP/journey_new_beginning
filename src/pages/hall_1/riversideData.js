@@ -8,7 +8,8 @@ import factImg from "./stage2/fact.png";
 export const RIVERSIDE_PUZZLE_ID = "riverside_crossing";
 
 /** Points written to DB `stage2` once the bridge is crossed. */
-export const RIVERSIDE_POINTS = 100;
+/* 5 points per correct statement answered (8 × 5); the live counter adds them one by one. */
+export const RIVERSIDE_POINTS = 40;
 
 /** Journey completion after this checkpoint (2 of 5). */
 export const RIVERSIDE_COMPLETION_PERCENT = 40;

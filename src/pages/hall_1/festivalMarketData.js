@@ -21,7 +21,8 @@ export { cardFront as CARD_FRONT_IMG, cardBack as CARD_BACK_IMG };
 export const FESTIVAL_MARKET_PUZZLE_ID = "festival_market";
 
 /** Points written to DB `stage3` when all pairs are matched. */
-export const FESTIVAL_MARKET_POINTS = 100;
+/* 5 points per correct pair matched (8 × 5); the live counter adds them one by one. */
+export const FESTIVAL_MARKET_POINTS = 40;
 
 /** Journey completion after this checkpoint (3 of 5). */
 export const FESTIVAL_MARKET_COMPLETION_PERCENT = 60;

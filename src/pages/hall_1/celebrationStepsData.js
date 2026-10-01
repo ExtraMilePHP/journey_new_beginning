@@ -11,7 +11,8 @@ export { deskBg as CELEBRATION_STEPS_DESK_BG, mobBg as CELEBRATION_STEPS_MOB_BG 
 export const CELEBRATION_STEPS_PUZZLE_ID = "celebration_steps";
 
 /** Points written to DB `stage4` when all activities are locked. */
-export const CELEBRATION_STEPS_POINTS = 100;
+/* 5 points per correct activity placed (12 × 5); the live counter adds them one by one. */
+export const CELEBRATION_STEPS_POINTS = 60;
 
 /** Journey completion after this checkpoint (4 of 5). */
 export const CELEBRATION_STEPS_COMPLETION_PERCENT = 80;
