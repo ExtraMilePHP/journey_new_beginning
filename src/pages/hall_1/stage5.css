@@ -503,3 +503,19 @@ body.gc-dragging * {
     font-size: 6cqw;
   }
 }
+
+/* Hint confirmation on portrait phones: buttons stacked, full label fits. */
+@media (max-width: 900px) and (orientation: portrait) {
+  .gc-confirm {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .gc-confirm .vs-btn {
+    width: min(190px, 80%);
+    padding: 0 6%;
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+  }
+}
